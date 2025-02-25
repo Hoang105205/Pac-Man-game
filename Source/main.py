@@ -1,33 +1,24 @@
-from Object.Board import Board
+from Object.Menu import Button, Menu, WIDTH, HEIGHT
 
 import pygame
 
-def config():
-    pygame.init()
-    WIDTH = 900
-    HEIGHT = 950
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    timer = pygame.time.Clock()
-    fps = 60
-    font = pygame.font.Font('freesansbold.ttf', 20)
-    return screen, timer, fps, font
+
+# Initial Pygame --------------------------
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('PacMan')
+clock = pygame.time.Clock()
+
+pygame.font.init()
+my_font = pygame.font.SysFont('Comic Sans MS', 30)
+my_font_2 = pygame.font.SysFont('Comic Sans MS', 100)
 
 
 def main():
-    screen, timer, fps, font = config()
-    run = True
-    while run:
-        timer
-        screen.fill('white')
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        pygame.display.flip()
+    # Chạy menu
+    menu = Menu(screen)
+    menu.run()
 
     pygame.quit()
-    
-    input("Press Enter to continue...")
+
 
 main()
