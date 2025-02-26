@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 # Khởi tạo pygame
 pygame.init()
@@ -66,30 +67,69 @@ class Button:
 
 class Menu:
     def __init__(self, screen):
+        self.current_level = 0
+        self.clicked = False
+        self.map_name = []
+        self.current_map = 0
+        self.done = False
+        self.current_screen = 1
         self.screen = screen
 
         menu_button_width = 150
         menu_button_height = 100
 
-        self.btnLevel1 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 1")
-        self.btnLevel2 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1 - 50, menu_button_width, menu_button_height, screen, "Level 2")
-        self.btnLevel3 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 2 - 50, menu_button_width, menu_button_height, screen, "Level 3")
-        self.btnLevel4 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 3 - 50, menu_button_width, menu_button_height, screen, "Level 4")
+        self.btnStart = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Start", self.start_function)
+        self.btnQuit = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Quit", self.quit_function)
+        self.btnLevel1 = Button(WIDTH // 4 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 1")
+        self.btnLevel2 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 2")
+        self.btnLevel3 = Button(WIDTH - menu_button_width * 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 3")
+        self.btnLevel4 = Button(WIDTH // 4 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 4")
+        self.btnLevel5 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 5")
+        self.btnLevel6 = Button(WIDTH - menu_button_width * 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 6")
+        self.btnBack = Button(40, HEIGHT // 4 * 3 + 70, 150, 100, screen, "BACK", self.back_function)
 
 
-        self.buttons = [self.btnLevel1, self.btnLevel2, self.btnLevel3, self.btnLevel4]
+    def start_function(self):
+        self.current_screen = 2
+        self.map_name = []
+        self.current_map = 0
+        self.current_level = 0
+
+    def quit_function(self):
+        pygame.quit()
+        sys.exit(0)
+
+    def back_function(self):
+        self.current_screen = 1
+        self.map_name = []
+        self.current_map = 0
+        self.current_level = 0
 
     def run(self):
-        running = True
-        while running:
-            screen.blit(bg, (0, 0))  # Hiển thị background
 
+        while not self.done:
+            self.clicked = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    pygame.quit()
+                    sys.exit(0)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.clicked = True
 
-            for button in self.buttons:
-                button.process()  # Vẽ các nút
+            if self.current_screen == 1:
+                self.screen.blit(bg, (0, 0))
+                self.btnStart.process()
+                self.btnQuit.process()
+
+            elif self.current_screen == 2:
+                self.screen.blit(bg, (0, 0))
+                self.btnLevel1.process()
+                self.btnLevel2.process()
+                self.btnLevel3.process()
+                self.btnLevel4.process()
+                self.btnLevel5.process()
+                self.btnLevel6.process()
+                self.btnBack.process()
 
             pygame.display.update()  # Cập nhật màn hình
 
