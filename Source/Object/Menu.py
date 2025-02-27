@@ -1,5 +1,9 @@
 import pygame
 import sys
+from Object.Board import Board
+import copy
+import math
+from constants import EMPTY, WALL, FOOD, GHOST
 
 # Khởi tạo pygame
 pygame.init()
@@ -10,8 +14,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game Menu")
 
 # Load background
-bg = pygame.image.load("Object/images/home_bg.png")
-bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
+background = pygame.image.load("Object/images/home_bg.png")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 # Fonts
 font = pygame.font.SysFont('Arial', 40)
@@ -20,6 +24,8 @@ font = pygame.font.SysFont('Arial', 40)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 
+_N = _M = 0
+SIZE_WALL = 25
 
 class Button:
     def __init__(self, x, y, width, height, screen, buttonText="Button", onClickFunction=None):
@@ -29,22 +35,28 @@ class Button:
         self.height = height
         self.onClickFunction = onClickFunction if onClickFunction else self.default_function
         self.screen = screen
+        self.enabled = True
 
         self.fillColors = {
-            'normal': '#FF4500',
-            'hover': '#FF6347',
-            'pressed': '#FF7F50',
+            'normal': '#03A9F4',   # Xanh dương nhạt
+            'hover': '#0288D1',    # Xanh dương đậm hơn
+            'pressed': '#0277BD',  # Xanh biển đậm
         }
+
+
 
         self.buttonSurface = pygame.Surface((self.width, self.height))
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        self.buttonSurf = font.render(buttonText, True, WHITE)
+        self.buttonText = font.render(buttonText, True, WHITE)
+
 
     def default_function(self):
-        print(f"Button '{self.buttonSurf}' clicked (but no function set)")
+        print(f"Button {self.buttonText} clicked (but no function set)")
 
     def process(self):
+        if not self.enabled:
+            return
         mousePos = pygame.mouse.get_pos()
         self.buttonSurface.fill(self.fillColors['normal'])
 
@@ -55,14 +67,18 @@ class Button:
                 self.onClickFunction()
 
         # Vẽ chữ lên nút
-        self.buttonSurface.blit(self.buttonSurf, [
-            self.buttonRect.width / 2 - self.buttonSurf.get_width() / 2,
-            self.buttonRect.height / 2 - self.buttonSurf.get_height() / 2
+        self.buttonSurface.blit(self.buttonText, [
+            self.buttonRect.width / 2 - self.buttonText.get_width() / 2,
+            self.buttonRect.height / 2 - self.buttonText.get_height() / 2
         ])
+
         pygame.draw.rect(self.buttonSurface, BLUE, (0, 0, self.width, self.height), 5)
 
         # Hiển thị nút lên màn hình
         self.screen.blit(self.buttonSurface, self.buttonRect)
+        
+
+
 
 
 class Menu:
@@ -75,20 +91,46 @@ class Menu:
         self.current_screen = 1
         self.screen = screen
 
-        menu_button_width = 150
-        menu_button_height = 100
+        self.menu_button_size = (150, 100)
 
-        self.btnStart = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Start", self.start_function)
-        self.btnQuit = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Quit", self.quit_function)
-        self.btnLevel1 = Button(WIDTH // 4 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 1")
-        self.btnLevel2 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 2")
-        self.btnLevel3 = Button(WIDTH - menu_button_width * 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 3")
-        self.btnLevel4 = Button(WIDTH // 4 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 4")
-        self.btnLevel5 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 5")
-        self.btnLevel6 = Button(WIDTH - menu_button_width * 2, HEIGHT // (2) + (menu_button_height + 10) * 1, menu_button_width, menu_button_height, screen, "Level 6")
-        self.btnBack = Button(40, HEIGHT // 4 * 3 + 70, 150, 100, screen, "BACK", self.back_function)
+        self.screen_handlers = {
+            1: self.draw_main_menu,
+            2: self.draw_level_menu
+        }
+
+        self.buttons = {
+            "Start": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Start", self.start_function),
+            "Quit": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Quit", self.quit_function),
+            "Level1": Button(self.left_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 1", self.load_map_level_1),
+            "Level2": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 2", None),
+            "Level3": Button(self.right_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 3", None),
+            "Level4": Button(self.left_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 4", None),
+            "Level5": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 5", None),
+            "Level6": Button(self.right_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 6", None),
+            "Back": Button(40, HEIGHT // 4 * 3 + 70, 150, 100, screen, "BACK", self.back_function)
+        }
+
+        self.board = Board()
+
+    # ============ Các hàm hỗ trợ vị trí nút ============
+    def center_x(self):
+        """Vị trí giữa màn hình theo chiều ngang."""
+        return WIDTH // 2 - self.menu_button_size[0] // 2
+
+    def left_x(self):
+        """Vị trí 1/4 màn hình."""
+        return WIDTH // 4 - self.menu_button_size[0] // 2
+
+    def right_x(self):
+        """Vị trí phía bên phải màn hình."""
+        return WIDTH - self.menu_button_size[0] * 2
+
+    def pos_y(self, row):
+        """Tính vị trí theo hàng dọc."""
+        return HEIGHT // 2 + (self.menu_button_size[1] + 10) * row - 50
 
 
+    # ============ Các hàm xử lý sự kiện ============
     def start_function(self):
         self.current_screen = 2
         self.map_name = []
@@ -105,6 +147,40 @@ class Menu:
         self.current_map = 0
         self.current_level = 0
 
+    def load_map_level_1(self):
+        screen.fill((0, 0, 0))
+        self.draw_board()
+        pygame.display.update()
+        pygame.time.wait(3000)
+
+
+    # ============ Các hàm vẽ màn hình ============
+    def draw_main_menu(self):
+        # self.buttons["Level1"].enabled = False
+        # self.buttons["Level2"].enabled = False
+        # self.buttons["Level3"].enabled = False
+        # self.buttons["Level4"].enabled = False
+        # self.buttons["Level5"].enabled = False
+        # self.buttons["Level6"].enabled = False
+        # self.buttons["Back"].enabled = False
+        self.screen.blit(background, (0, 0))
+        self.buttons["Start"].process()
+        self.buttons["Quit"].process()
+
+    def draw_level_menu(self):
+        # self.buttons["Start"].enabled = False
+        # self.buttons["Quit"].enabled = False
+        self.screen.blit(background, (0, 0))
+        self.buttons["Level1"].process()
+        self.buttons["Level2"].process()
+        self.buttons["Level3"].process()
+        self.buttons["Level4"].process()
+        self.buttons["Level5"].process()
+        self.buttons["Level6"].process()
+        self.buttons["Back"].process()
+
+    
+    # ============ Hàm chạy chính ============
     def run(self):
 
         while not self.done:
@@ -116,22 +192,26 @@ class Menu:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.clicked = True
 
-            if self.current_screen == 1:
-                self.screen.blit(bg, (0, 0))
-                self.btnStart.process()
-                self.btnQuit.process()
-
-            elif self.current_screen == 2:
-                self.screen.blit(bg, (0, 0))
-                self.btnLevel1.process()
-                self.btnLevel2.process()
-                self.btnLevel3.process()
-                self.btnLevel4.process()
-                self.btnLevel5.process()
-                self.btnLevel6.process()
-                self.btnBack.process()
+            self.screen_handlers[self.current_screen]()
 
             pygame.display.update()  # Cập nhật màn hình
+            
+    # ============ Hàm vẽ bảng ============      
+    def draw_board(self):
+        N, M = 31, 28
 
+        MARGIN_TOP = 20
+        MARGIN_LEFT = (WIDTH - M * SIZE_WALL) // 2
 
+        for i in range(N):
+            line = self.board.grid[i]
+            for j in range(M):
+                cell = line[j]
+                if cell == WALL:
+                    image = pygame.Surface([SIZE_WALL, SIZE_WALL])
+                    image.fill('white')
+                    pygame.draw.rect(image, BLUE, (0, 0, SIZE_WALL, SIZE_WALL), 1)
+                    top = i * SIZE_WALL + MARGIN_TOP
+                    left = j * SIZE_WALL + MARGIN_LEFT
+                    self.screen.blit(image, (left, top))
 
