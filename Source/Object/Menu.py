@@ -46,9 +46,10 @@ class Button:
 
         self.buttonText = font.render(buttonText, True, WHITE)
 
+        self.text = buttonText
 
     def default_function(self):
-        print(f"Button '{self.buttonText}' clicked (but no function set)")
+        print(f"Button '{self.text}' clicked (but no function set)")
 
     def process(self):
         mousePos = pygame.mouse.get_pos()
