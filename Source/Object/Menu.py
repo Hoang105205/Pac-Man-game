@@ -3,13 +3,13 @@ import sys
 from Object.Board import Board
 import copy
 import math
-from constants import EMPTY, WALL, FOOD, GHOST
+from constants import EMPTY, FOOD, GHOST, SIZE_WALL, TILE, VERTICAL_LINE, HORIZONTAL_LINE, TOP_RIGHT, TOP_LEFT, BOT_LEFT, BOT_RIGHT, GATE, EMPTY
 
 # Khởi tạo pygame
 pygame.init()
 
 # Kích thước màn hình
-WIDTH, HEIGHT = 900, 800
+WIDTH, HEIGHT = 930, 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game Menu")
 
@@ -24,8 +24,7 @@ font = pygame.font.SysFont('Arial', 40)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 
-_N = _M = 0
-SIZE_WALL = 25
+PI = math.pi
 
 class Button:
     def __init__(self, x, y, width, height, screen, buttonText="Button", onClickFunction=None):
@@ -198,20 +197,27 @@ class Menu:
             
     # ============ Hàm vẽ bảng ============      
     def draw_board(self):
-        N, M = 31, 28
 
-        MARGIN_TOP = 20
-        MARGIN_LEFT = (WIDTH - M * SIZE_WALL) // 2
-
-        for i in range(N):
-            line = self.board.grid[i]
-            for j in range(M):
-                cell = line[j]
-                if cell == WALL:
-                    image = pygame.Surface([SIZE_WALL, SIZE_WALL])
-                    image.fill('white')
-                    pygame.draw.rect(image, BLUE, (0, 0, SIZE_WALL, SIZE_WALL), 1)
-                    top = i * SIZE_WALL + MARGIN_TOP
-                    left = j * SIZE_WALL + MARGIN_LEFT
-                    self.screen.blit(image, (left, top))
+        num1 = ((HEIGHT - 50) // TILE["HEIGHT"])
+        num2 = (WIDTH // TILE["WIDTH"])
+        for i in range(len(self.board.grid)):
+            for j in range(len(self.board.grid[i])):
+                # if self.board.grid[i][j] == 1:
+                #     pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 4)
+                # if self.board.grid[i][j] == 2 and not flicker:
+                #     pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 10)
+                if self.board.grid[i][j] == VERTICAL_LINE:
+                    pygame.draw.line(screen, BLUE, (j * num2 + (0.5 * num2), i * num1), (j * num2 + (0.5 * num2), i * num1 + num1), 3)
+                if self.board.grid[i][j] == HORIZONTAL_LINE:
+                    pygame.draw.line(screen, BLUE, (j * num2, i * num1 + (0.5 * num1)), (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
+                if self.board.grid[i][j] == TOP_RIGHT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 - (num2 * 0.4)) - 2, (i * num1 + (0.5 * num1)), num2, num1], 0, PI / 2, 3)
+                if self.board.grid[i][j] == TOP_LEFT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 + (num2 * 0.5)), (i * num1 + (0.5 * num1)), num2, num1], PI / 2, PI, 3)
+                if self.board.grid[i][j] == BOT_LEFT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 + (num2 * 0.5)), (i * num1 - (0.4 * num1)), num2, num1], PI, 3 * PI / 2, 3)
+                if self.board.grid[i][j] == BOT_RIGHT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 - (num2 * 0.4)) - 2, (i * num1 - (0.4 * num1)), num2, num1], 3 * PI / 2, 2 * PI, 3)
+                if self.board.grid[i][j] == GATE:
+                    pygame.draw.line(screen, 'white', (j * num2, i * num1 + (0.5 * num1)), (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
 
