@@ -1,7 +1,12 @@
 import pygame
+import sys
 from Object.Board import Board
+from Object.Player import Player
 import copy
 import math
+from constants import EMPTY, FOOD, GHOST, SIZE_WALL, TILE, VERTICAL_LINE, HORIZONTAL_LINE, TOP_RIGHT, TOP_LEFT, BOT_LEFT, BOT_RIGHT, GATE, EMPTY
+from Object.Ghost import Ghost
+
 # Khởi tạo pygame
 pygame.init()
 
@@ -11,8 +16,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game Menu")
 
 # Load background
-bg = pygame.image.load("Object/images/home_bg.png")
-bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
+background = pygame.image.load("Object/images/home_bg.png")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 # Fonts
 font = pygame.font.SysFont('Arial', 40)
@@ -21,7 +26,9 @@ font = pygame.font.SysFont('Arial', 40)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 
-
+_N = _M = 0
+SIZE_WALL = 25
+PI = math.pi
 class Button:
     def __init__(self, x, y, width, height, screen, buttonText="Button", onClickFunction=None):
         self.x = x
@@ -30,22 +37,28 @@ class Button:
         self.height = height
         self.onClickFunction = onClickFunction if onClickFunction else self.default_function
         self.screen = screen
+        self.enabled = True
 
         self.fillColors = {
-            'normal': '#FF4500',
-            'hover': '#FF6347',
-            'pressed': '#FF7F50',
+            'normal': '#03A9F4',   # Xanh dương nhạt
+            'hover': '#0288D1',    # Xanh dương đậm hơn
+            'pressed': '#0277BD',  # Xanh biển đậm
         }
+
+
 
         self.buttonSurface = pygame.Surface((self.width, self.height))
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        self.buttonSurf = font.render(buttonText, True, WHITE)
+        self.buttonText = font.render(buttonText, True, WHITE)
+
 
     def default_function(self):
-        print(f"Button '{self.buttonSurf}' clicked (but no function set)")
+        print(f"Button {self.buttonText} clicked (but no function set)")
 
     def process(self):
+        if not self.enabled:
+            return
         mousePos = pygame.mouse.get_pos()
         self.buttonSurface.fill(self.fillColors['normal'])
 
@@ -56,90 +69,162 @@ class Button:
                 self.onClickFunction()
 
         # Vẽ chữ lên nút
-        self.buttonSurface.blit(self.buttonSurf, [
-            self.buttonRect.width / 2 - self.buttonSurf.get_width() / 2,
-            self.buttonRect.height / 2 - self.buttonSurf.get_height() / 2
+        self.buttonSurface.blit(self.buttonText, [
+            self.buttonRect.width / 2 - self.buttonText.get_width() / 2,
+            self.buttonRect.height / 2 - self.buttonText.get_height() / 2
         ])
+
         pygame.draw.rect(self.buttonSurface, BLUE, (0, 0, self.width, self.height), 5)
 
         # Hiển thị nút lên màn hình
         self.screen.blit(self.buttonSurface, self.buttonRect)
+        
+
+
 
 
 class Menu:
     def __init__(self, screen):
+        self.current_level = 0
+        self.clicked = False
+        self.map_name = []
+        self.current_map = 0
+        self.done = False
+        self.current_screen = 1
         self.screen = screen
 
-        menu_button_width = 150
-        menu_button_height = 100
+        self.menu_button_size = (150, 100)
 
-        self.btnLevel1 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 0 - 50, menu_button_width, menu_button_height, screen, "Level 1", self.load_map_level_1)
-        self.btnLevel2 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 1 - 50, menu_button_width, menu_button_height, screen, "Level 2", None)
-        self.btnLevel3 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 2 - 50, menu_button_width, menu_button_height, screen, "Level 3", None)
-        self.btnLevel4 = Button(WIDTH // 2 - menu_button_width // 2, HEIGHT // (2) + (menu_button_height + 10) * 3 - 50, menu_button_width, menu_button_height, screen, "Level 4", None)
+        self.screen_handlers = {
+            1: self.draw_main_menu,
+            2: self.draw_level_menu
+        }
+
+        self.buttons = {
+            "Start": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Start", self.start_function),
+            "Quit": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Quit", self.quit_function),
+            "Level1": Button(self.left_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 1", self.load_map_level_1),
+            "Level2": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 2", None),
+            "Level3": Button(self.right_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 3", None),
+            "Level4": Button(self.left_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 4", None),
+            "Level5": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 5", None),
+            "Level6": Button(self.right_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 6", None),
+            "Back": Button(40, HEIGHT // 4 * 3 + 70, 150, 100, screen, "BACK", self.back_function)
+        }
+
+        self.board = Board()
+
+    # ============ Các hàm hỗ trợ vị trí nút ============
+    def center_x(self):
+        """Vị trí giữa màn hình theo chiều ngang."""
+        return WIDTH // 2 - self.menu_button_size[0] // 2
+
+    def left_x(self):
+        """Vị trí 1/4 màn hình."""
+        return WIDTH // 4 - self.menu_button_size[0] // 2
+
+    def right_x(self):
+        """Vị trí phía bên phải màn hình."""
+        return WIDTH - self.menu_button_size[0] * 2
+
+    def pos_y(self, row):
+        """Tính vị trí theo hàng dọc."""
+        return HEIGHT // 2 + (self.menu_button_size[1] + 10) * row - 50
 
 
-        self.buttons = [self.btnLevel1, self.btnLevel2, self.btnLevel3, self.btnLevel4]
+    # ============ Các hàm xử lý sự kiện ============
+    def start_function(self):
+        self.current_screen = 2
+        self.map_name = []
+        self.current_map = 0
+        self.current_level = 0
 
-    def run(self):
-        running = True
-        while running:
-            screen.blit(bg, (0, 0))  # Hiển thị background
+    def quit_function(self):
+        pygame.quit()
+        sys.exit(0)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+    def back_function(self):
+        self.current_screen = 1
+        self.map_name = []
+        self.current_map = 0
+        self.current_level = 0
 
-            for button in self.buttons:
-                button.process()  # Vẽ các nút
-
-            pygame.display.update()  # Cập nhật màn hình
-    
-    
     def load_map_level_1(self):
+        Pacman = Player(60, 42)
+        Ghost1 = Ghost(435, 355, "Object/images/Inky.png")
         screen.fill((0, 0, 0))
-        draw_board()
+        self.draw_board()
+        Pacman.draw(screen)
+        Ghost1.draw(screen)
         pygame.display.update()
         pygame.time.wait(3000)
-        
-            
-# Vẽ bảng        
-def draw_board():
-    level = copy.deepcopy(Board().grid)
-    color = 'blue'
-    flicker = False
-    PI = math.pi
-    num1 = ((HEIGHT - 50) // 32)
-    num2 = (WIDTH // 30)
-    for i in range(len(level)):
-        for j in range(len(level[i])):
-            if level[i][j] == 1:
-                pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 4)
-            if level[i][j] == 2 and not flicker:
-                pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 10)
-            if level[i][j] == 3:
-                pygame.draw.line(screen, color, (j * num2 + (0.5 * num2), i * num1),
-                                (j * num2 + (0.5 * num2), i * num1 + num1), 3)
-            if level[i][j] == 4:
-                pygame.draw.line(screen, color, (j * num2, i * num1 + (0.5 * num1)),
-                                (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
-            if level[i][j] == 5:
-                pygame.draw.arc(screen, color, [(j * num2 - (num2 * 0.4)) - 2, (i * num1 + (0.5 * num1)), num2, num1],
-                                0, PI / 2, 3)
-            if level[i][j] == 6:
-                pygame.draw.arc(screen, color,
-                                [(j * num2 + (num2 * 0.5)), (i * num1 + (0.5 * num1)), num2, num1], PI / 2, PI, 3)
-            if level[i][j] == 7:
-                pygame.draw.arc(screen, color, [(j * num2 + (num2 * 0.5)), (i * num1 - (0.4 * num1)), num2, num1], PI,
-                                3 * PI / 2, 3)
-            if level[i][j] == 8:
-                pygame.draw.arc(screen, color,
-                                [(j * num2 - (num2 * 0.4)) - 2, (i * num1 - (0.4 * num1)), num2, num1], 3 * PI / 2,
-                                2 * PI, 3)
-            if level[i][j] == 9:
-                pygame.draw.line(screen, 'white', (j * num2, i * num1 + (0.5 * num1)),
-                                (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
-        
 
+
+    # ============ Các hàm vẽ màn hình ============
+    def draw_main_menu(self):
+        # self.buttons["Level1"].enabled = False
+        # self.buttons["Level2"].enabled = False
+        # self.buttons["Level3"].enabled = False
+        # self.buttons["Level4"].enabled = False
+        # self.buttons["Level5"].enabled = False
+        # self.buttons["Level6"].enabled = False
+        # self.buttons["Back"].enabled = False
+        self.screen.blit(background, (0, 0))
+        self.buttons["Start"].process()
+        self.buttons["Quit"].process()
+
+    def draw_level_menu(self):
+        # self.buttons["Start"].enabled = False
+        # self.buttons["Quit"].enabled = False
+        self.screen.blit(background, (0, 0))
+        self.buttons["Level1"].process()
+        self.buttons["Level2"].process()
+        self.buttons["Level3"].process()
+        self.buttons["Level4"].process()
+        self.buttons["Level5"].process()
+        self.buttons["Level6"].process()
+        self.buttons["Back"].process()
+
+    
+    # ============ Hàm chạy chính ============
+    def run(self):
+
+        while not self.done:
+            self.clicked = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit(0)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.clicked = True
+
+            self.screen_handlers[self.current_screen]()
+
+            pygame.display.update()  # Cập nhật màn hình
+            
+    # ============ Hàm vẽ bảng ============      
+    def draw_board(self):
+        num1 = ((HEIGHT - 50) // TILE["HEIGHT"])
+        num2 = (WIDTH // TILE["WIDTH"])
+        for i in range(len(self.board.grid)):
+            for j in range(len(self.board.grid[i])):
+                # if self.board.grid[i][j] == 1:
+                #     pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 4)
+                # if self.board.grid[i][j] == 2 and not flicker:
+                #     pygame.draw.circle(screen, 'white', (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)), 10)
+                if self.board.grid[i][j] == VERTICAL_LINE:
+                    pygame.draw.line(screen, BLUE, (j * num2 + (0.5 * num2), i * num1), (j * num2 + (0.5 * num2), i * num1 + num1), 3)
+                if self.board.grid[i][j] == HORIZONTAL_LINE:
+                    pygame.draw.line(screen, BLUE, (j * num2, i * num1 + (0.5 * num1)), (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
+                if self.board.grid[i][j] == TOP_RIGHT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 - (num2 * 0.4)) - 2, (i * num1 + (0.5 * num1)), num2, num1], 0, PI / 2, 3)
+                if self.board.grid[i][j] == TOP_LEFT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 + (num2 * 0.5)), (i * num1 + (0.5 * num1)), num2, num1], PI / 2, PI, 3)
+                if self.board.grid[i][j] == BOT_LEFT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 + (num2 * 0.5)), (i * num1 - (0.4 * num1)), num2, num1], PI, 3 * PI / 2, 3)
+                if self.board.grid[i][j] == BOT_RIGHT:
+                    pygame.draw.arc(screen, BLUE, [(j * num2 - (num2 * 0.4)) - 2, (i * num1 - (0.4 * num1)), num2, num1], 3 * PI / 2, 2 * PI, 3)
+                if self.board.grid[i][j] == GATE:
+                    pygame.draw.line(screen, 'white', (j * num2, i * num1 + (0.5 * num1)), (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
 
 
