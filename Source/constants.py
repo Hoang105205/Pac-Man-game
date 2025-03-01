@@ -9,10 +9,16 @@ TILE = {
     "HEIGHT": 32,
 }
 
-SIZE_WALL: int = 32
+
+# Pixel on screen
+START_X = 12
+START_Y = -10
+
+SIZE_WALL: int = 25
 DEFINE_WIDTH: int = 6
 BLOCK_SIZE: int = SIZE_WALL // 2
 
+# Display
 VERTICAL_LINE: int = 3
 HORIZONTAL_LINE: int = 4
 TOP_RIGHT: int = 5

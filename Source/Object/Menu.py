@@ -4,14 +4,19 @@ from Object.Board import Board
 from Object.Player import Player
 import copy
 import math
-from constants import EMPTY, FOOD, GHOST, SIZE_WALL, TILE, VERTICAL_LINE, HORIZONTAL_LINE, TOP_RIGHT, TOP_LEFT, BOT_LEFT, BOT_RIGHT, GATE, EMPTY
+from constants import EMPTY, FOOD, GHOST, SIZE_WALL, TILE, VERTICAL_LINE, HORIZONTAL_LINE, TOP_RIGHT, TOP_LEFT, BOT_LEFT, BOT_RIGHT, GATE, EMPTY, START_X, START_Y, BLOCK_SIZE
 from Object.Ghost import Ghost
+
+# ============ Class Algorithm ============
+from Object.Algorithm import Algorithm
+
+
 
 # Khởi tạo pygame
 pygame.init()
 
 # Kích thước màn hình
-WIDTH, HEIGHT = 900, 800
+WIDTH, HEIGHT = 930, 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Game Menu")
 
@@ -37,7 +42,7 @@ class Button:
         self.height = height
         self.onClickFunction = onClickFunction if onClickFunction else self.default_function
         self.screen = screen
-        self.enabled = True
+        self.clicked = False
 
         self.fillColors = {
             'normal': '#03A9F4',   # Xanh dương nhạt
@@ -57,16 +62,20 @@ class Button:
         print(f"Button {self.buttonText} clicked (but no function set)")
 
     def process(self):
-        if not self.enabled:
-            return
         mousePos = pygame.mouse.get_pos()
         self.buttonSurface.fill(self.fillColors['normal'])
 
         if self.buttonRect.collidepoint(mousePos):  # Nếu chuột nằm trên nút
             self.buttonSurface.fill(self.fillColors['hover'])
-            if pygame.mouse.get_pressed()[0]:  # Nếu nhấn chuột trái
+            
+
+            if not pygame.mouse.get_pressed()[0] and self.clicked == True:  # Khi chuột NHẢ, thực thi hàm
                 self.buttonSurface.fill(self.fillColors['pressed'])
                 self.onClickFunction()
+                self.clicked = False  # Reset trạng thái click để tránh double-click
+            # Khi chuột NHẤN, đánh dấu là đã click
+            elif pygame.mouse.get_pressed()[0]:
+                self.clicked = True
 
         # Vẽ chữ lên nút
         self.buttonSurface.blit(self.buttonText, [
@@ -103,8 +112,8 @@ class Menu:
         self.buttons = {
             "Start": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Start", self.start_function),
             "Quit": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Quit", self.quit_function),
-            "Level1": Button(self.left_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 1", self.load_map_level_1),
-            "Level2": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 2", None),
+            "Level1": Button(self.left_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 1", self.level_1_ingame),
+            "Level2": Button(self.center_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 2", self.level_1_ingame),
             "Level3": Button(self.right_x(), self.pos_y(0), *self.menu_button_size, screen, "Level 3", None),
             "Level4": Button(self.left_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 4", None),
             "Level5": Button(self.center_x(), self.pos_y(1), *self.menu_button_size, screen, "Level 5", None),
@@ -149,33 +158,82 @@ class Menu:
         self.current_map = 0
         self.current_level = 0
 
-    def load_map_level_1(self):
-        Pacman = Player(60, 42)
-        Ghost1 = Ghost(435, 355, "Object/images/Inky.png")
+    def level_1_ingame(self):
+        # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
+
+        board = Board()
+        main_board = copy.deepcopy(board.grid_algorithm)
+        
+        # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
+        i_pacman = 2
+        j_pacman = 2
+        i_ghost = 15
+        j_ghost = 14
+        spawn_pacman = (j_pacman, i_pacman)
+        spawn_ghost = (j_ghost, i_ghost)
+        Pacman = Player(spawn_pacman[0] * TILE["WIDTH"] + START_X, spawn_pacman[1] * TILE["HEIGHT"] + START_Y)
+        Ghost1 = Ghost(spawn_ghost[0] * TILE["WIDTH"] + START_X, spawn_ghost[1] * TILE["HEIGHT"] + START_Y, "Object/images/Inky.png")
+
+        # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
         self.draw_board()
+
         Pacman.draw(screen)
         Ghost1.draw(screen)
+
         pygame.display.update()
+
+        # --------------- Game loop ---------------
+        start = (i_ghost, j_ghost)
+        end = (i_pacman, j_pacman)
+
+        algorithm = Algorithm()
+        result = algorithm.BFS(main_board, start, end)
+
+        if result is not None:
+            for i in range(len(result)):
+                target_y = result[i][0] * TILE["HEIGHT"] + START_Y
+                target_x = result[i][1] * TILE["WIDTH"] + START_X
+
+                # # Di chuyển từng bước nhỏ
+                # while (Pacman.x, Pacman.y) != (target_x, target_y):
+                #     if Pacman.x < target_x:
+                #         Pacman.move(1, 0)  # Qua phải
+                #     elif Pacman.x > target_x:
+                #         Pacman.move(-1, 0)  # Qua trái
+
+                #     if Pacman.y < target_y:
+                #         Pacman.move(0, 1)  # Xuống
+                #     elif Pacman.y > target_y:
+                #         Pacman.move(0, -1)  # Lên
+
+
+                #TODO: làm 1 hàm di chuyển Pacman, ghost mượt mà (gợi ý nnằm ở trên)
+
+                Ghost1.move(target_x - Ghost1.x, target_y - Ghost1.y)
+
+                # Vẽ lại màn hình
+                screen.fill((0, 0, 0))
+                self.draw_board()
+                Pacman.draw(screen)
+                Ghost1.draw(screen)
+                pygame.display.update()
+
+                # Điều chỉnh tốc độ
+                pygame.time.delay(200)  
+
+       
+
         pygame.time.wait(3000)
 
 
     # ============ Các hàm vẽ màn hình ============
     def draw_main_menu(self):
-        # self.buttons["Level1"].enabled = False
-        # self.buttons["Level2"].enabled = False
-        # self.buttons["Level3"].enabled = False
-        # self.buttons["Level4"].enabled = False
-        # self.buttons["Level5"].enabled = False
-        # self.buttons["Level6"].enabled = False
-        # self.buttons["Back"].enabled = False
         self.screen.blit(background, (0, 0))
         self.buttons["Start"].process()
         self.buttons["Quit"].process()
 
     def draw_level_menu(self):
-        # self.buttons["Start"].enabled = False
-        # self.buttons["Quit"].enabled = False
         self.screen.blit(background, (0, 0))
         self.buttons["Level1"].process()
         self.buttons["Level2"].process()
