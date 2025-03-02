@@ -9,10 +9,19 @@ pygame.display.set_caption('PacMan')
 # -----------------------------------------
 
 
+from Object.Board import Board
+from Object.Algorithm import Algorithm
+
 def main():
     # Chạy menu
     menu = Menu(screen)
     menu.run()
     pygame.quit()
+
+
+
+   
+
+
 
 main()

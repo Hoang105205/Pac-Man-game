@@ -1,13 +1,13 @@
 import pygame
-from constants import SIZE_WALL,TILE
+from constants import SPRITERATIO, SQUARE
 class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.images = [pygame.image.load(f"Object/images/{i}.png") for i in range(1, 5)]  # 4 ảnh từ 1.png đến 4.png
+        self.images = [pygame.image.load(f"Object/images/{i}.png").convert_alpha() for i in range(1, 5)]  # 4 ảnh từ 1.png đến 4.png
         self.current_frame = 0  # Chỉ số frame hiện tại
         self.image = self.images[self.current_frame]  # Ảnh ban đầu
-        self.image = pygame.transform.scale(self.image, (TILE["WIDTH"], TILE["HEIGHT"]))
+        self.image = pygame.transform.scale(self.image, (SQUARE * SPRITERATIO, SQUARE * SPRITERATIO))
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.animation_speed = 10  # Số frame mỗi lần đổi ảnh
