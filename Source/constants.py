@@ -1,22 +1,16 @@
-MARGIN = {
-    "TOP": 0,
-    "LEFT": 0
-}
+# BOARD SIZE
+BOARD_WIDTH: int = 28
+BOARD_HEIGHT: int = 35
 
-# DEFINE MAP
-TILE = {
-    "WIDTH": 30,
-    "HEIGHT": 32,
-}
+# Size of each unit square
+SQUARE: int = 25
 
+# Enitity image scale size
+SPRITERATIO = 3/2
 
 # Pixel on screen
-START_X = 12
-START_Y = -10
-
-SIZE_WALL: int = 25
-DEFINE_WIDTH: int = 6
-BLOCK_SIZE: int = SIZE_WALL // 2
+START_X = (1 - SPRITERATIO) * (1/2)
+START_Y = (1 - SPRITERATIO) * (1/2)
 
 # Display
 VERTICAL_LINE: int = 3
@@ -32,3 +26,6 @@ EMPTY = 0
 FOOD = 1
 BIG_FOOD = 2
 GHOST = 3
+
+#Speed
+SPEED = 0.0001220703125
