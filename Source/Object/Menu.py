@@ -162,13 +162,11 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_pacman = 4
-        j_pacman = 1
         i_ghost = 17
         j_ghost = 14
-        spawn_pacman = (j_pacman, i_pacman)
         spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(spawn_pacman[0] * SQUARE + START_X, spawn_pacman[1] * SQUARE + START_Y)
+        Pacman = Player(0,0)
+        spawn_pacman = Pacman.random_spawn()
         Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
 
         # --------------- Vẽ bảng ---------------
@@ -182,7 +180,7 @@ class Menu:
 
         # --------------- Game loop ---------------
         start = (i_ghost, j_ghost)
-        end = (i_pacman, j_pacman)
+        end = spawn_pacman
 
         algorithm = Algorithm()
         result = algorithm.BFS(main_board, start, end)
@@ -211,13 +209,11 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_pacman = 4
-        j_pacman = 1
         i_ghost = 17
         j_ghost = 14
-        spawn_pacman = (j_pacman, i_pacman)
         spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(spawn_pacman[0] * SQUARE + START_X, spawn_pacman[1] * SQUARE + START_Y)
+        Pacman = Player(0,0)
+        spawn_pacman = Pacman.random_spawn()
         Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
 
         # --------------- Vẽ bảng ---------------
@@ -231,7 +227,7 @@ class Menu:
 
         # --------------- Game loop ---------------
         start = (i_ghost, j_ghost)
-        end = (i_pacman, j_pacman)
+        end = spawn_pacman
 
         algorithm = Algorithm()
         result = algorithm.DFS(main_board, start, end, path = None)
@@ -260,13 +256,12 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_pacman = 4
-        j_pacman = 1
+        
         i_ghost = 17
         j_ghost = 14
-        spawn_pacman = (j_pacman, i_pacman)
         spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(spawn_pacman[0] * SQUARE + START_X, spawn_pacman[1] * SQUARE + START_Y)
+        Pacman = Player(0,0)
+        spawn_pacman = Pacman.random_spawn()
         Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
 
         # --------------- Vẽ bảng ---------------
@@ -280,7 +275,7 @@ class Menu:
 
         # --------------- Game loop ---------------
         start = (i_ghost, j_ghost)
-        end = (i_pacman, j_pacman)
+        end = spawn_pacman
 
         algorithm = Algorithm()
         result = algorithm.UCS(main_board, start, end)
@@ -309,13 +304,12 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_pacman = 4
-        j_pacman = 1
+        
         i_ghost = 17
         j_ghost = 14
-        spawn_pacman = (j_pacman, i_pacman)
         spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(spawn_pacman[0] * SQUARE + START_X, spawn_pacman[1] * SQUARE + START_Y)
+        Pacman = Player(0,0)
+        spawn_pacman = Pacman.random_spawn()
         Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Blinky.png")
 
         # --------------- Vẽ bảng ---------------
@@ -329,7 +323,7 @@ class Menu:
 
         # --------------- Game loop ---------------
         start = (i_ghost, j_ghost)
-        end = (i_pacman, j_pacman)
+        end = spawn_pacman
 
         algorithm = Algorithm()
         result = algorithm.ASTAR(main_board, start, end)
@@ -358,9 +352,6 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        #Pacman
-        i_pacman = 4
-        j_pacman = 1
         
         #Blue Ghost
         i_blue_ghost = 16
@@ -378,13 +369,13 @@ class Menu:
         i_red_ghost = 17
         j_red_ghost = 12
         
-        spawn_pacman = (j_pacman, i_pacman)
         spawn_blue_ghost = (j_blue_ghost, i_blue_ghost)
         spawn_pink_ghost = (j_pink_ghost, i_pink_ghost)
         spawn_orange_ghost = (j_orange_ghost, i_orange_ghost)
         spawn_red_ghost = (j_red_ghost, i_red_ghost)
         
-        Pacman = Player(spawn_pacman[0] * SQUARE + START_X, spawn_pacman[1] * SQUARE + START_Y)
+        Pacman = Player(0,0)
+        spawn_pacman = Pacman.random_spawn()
         Blue_Ghost = Ghost(spawn_blue_ghost[0] * SQUARE + START_X, spawn_blue_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
         Pink_Ghost = Ghost(spawn_pink_ghost[0] * SQUARE + START_X, spawn_pink_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
         Orange_Ghost = Ghost(spawn_orange_ghost[0] * SQUARE + START_X, spawn_orange_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
@@ -407,7 +398,7 @@ class Menu:
         Pink_start = (i_pink_ghost, j_pink_ghost)
         Orange_start = (i_orange_ghost, j_orange_ghost)
         Red_start = (i_red_ghost, j_red_ghost)
-        end = (i_pacman, j_pacman)
+        end = spawn_pacman
 
         algorithm = Algorithm()
         Blue_result = algorithm.BFS(main_board, Blue_start, end)
@@ -449,6 +440,103 @@ class Menu:
                 pygame.display.update()
 
         pygame.time.wait(3000)
+        
+       # ============ Dang hoan thien ============ 
+    # def level_6_ingame(self):
+    #      # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
+
+    #     board = Board()
+    #     main_board = copy.deepcopy(board.grid_algorithm)
+        
+    #     # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
+        
+    #     #Blue Ghost
+    #     i_blue_ghost = 16
+    #     j_blue_ghost = 15
+        
+    #     #Pink Ghost
+    #     i_pink_ghost = 16
+    #     j_pink_ghost = 12
+        
+    #     #Orange Ghost
+    #     i_orange_ghost = 17
+    #     j_orange_ghost = 15
+        
+    #     #Red Ghost
+    #     i_red_ghost = 17
+    #     j_red_ghost = 12
+        
+    #     spawn_blue_ghost = (j_blue_ghost, i_blue_ghost)
+    #     spawn_pink_ghost = (j_pink_ghost, i_pink_ghost)
+    #     spawn_orange_ghost = (j_orange_ghost, i_orange_ghost)
+    #     spawn_red_ghost = (j_red_ghost, i_red_ghost)
+        
+    #     Pacman = Player(0,0)
+    #     spawn_pacman = Pacman.random_spawn()
+    #     Blue_Ghost = Ghost(spawn_blue_ghost[0] * SQUARE + START_X, spawn_blue_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
+    #     Pink_Ghost = Ghost(spawn_pink_ghost[0] * SQUARE + START_X, spawn_pink_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
+    #     Orange_Ghost = Ghost(spawn_orange_ghost[0] * SQUARE + START_X, spawn_orange_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
+    #     Red_Ghost = Ghost(spawn_red_ghost[0] * SQUARE + START_X, spawn_red_ghost[1] * SQUARE + START_Y, "Object/images/Blinky.png")
+
+    #     # --------------- Vẽ bảng ---------------
+    #     screen.fill((0, 0, 0))
+    #     self.draw_board()
+
+    #     Pacman.draw(screen)
+    #     Blue_Ghost.draw(screen)
+    #     Pink_Ghost.draw(screen)
+    #     Orange_Ghost.draw(screen)
+    #     Red_Ghost.draw(screen)
+
+    #     pygame.display.update()
+
+    #     # --------------- Game loop ---------------
+    #     Blue_start = (i_blue_ghost, j_blue_ghost)
+    #     Pink_start = (i_pink_ghost, j_pink_ghost)
+    #     Orange_start = (i_orange_ghost, j_orange_ghost)
+    #     Red_start = (i_red_ghost, j_red_ghost)
+    #     end = spawn_pacman
+
+    #     algorithm = Algorithm()
+    #     Blue_result = algorithm.BFS(main_board, Blue_start, end)
+    #     Pink_result = algorithm.DFS(main_board, Pink_start, end, path = None)
+    #     Orange_result = algorithm.UCS(main_board, Orange_start, end)
+    #     Red_result = algorithm.ASTAR(main_board, Red_start, end)
+    #     max_length = max(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
+
+    #     if Blue_result is not None or Pink_result is not None or Orange_result is not None or Red_result is not None:
+    #         for i in range(max_length):
+    #             if i < len(Blue_result):
+    #                 target_y = Blue_result[i][0] * SQUARE + START_Y
+    #                 target_x = Blue_result[i][1] * SQUARE + START_X
+    #                 Blue_Ghost.move(target_x, target_y)
+                    
+    #             if i < len(Pink_result):
+    #                 target_y = Pink_result[i][0] * SQUARE + START_Y
+    #                 target_x = Pink_result[i][1] * SQUARE + START_X
+    #                 Pink_Ghost.move(target_x, target_y)
+                    
+    #             if i < len(Orange_result):
+    #                 target_y = Orange_result[i][0] * SQUARE + START_Y
+    #                 target_x = Orange_result[i][1] * SQUARE + START_X
+    #                 Orange_Ghost.move(target_x, target_y)
+                    
+    #             if i < len(Red_result):
+    #                 target_y = Red_result[i][0] * SQUARE + START_Y
+    #                 target_x = Red_result[i][1] * SQUARE + START_X
+    #                 Red_Ghost.move(target_x, target_y)
+
+    #             # Vẽ lại màn hình
+    #             screen.fill((0, 0, 0))
+    #             self.draw_board()
+    #             Pacman.draw(screen)
+    #             Blue_Ghost.draw(screen)
+    #             Pink_Ghost.draw(screen)
+    #             Orange_Ghost.draw(screen)
+    #             Red_Ghost.draw(screen)
+    #             pygame.display.update()
+
+    #     pygame.time.wait(3000)
 
 
     # ============ Các hàm vẽ màn hình ============

@@ -1,5 +1,7 @@
 import pygame
-from constants import SPRITERATIO, SQUARE
+from constants import SPRITERATIO, SQUARE, START_X, START_Y, SPEED
+from Object.Board import Board
+import random
 class Player:
     def __init__(self, x, y):
         self.x = x
@@ -23,11 +25,30 @@ class Player:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
-        self.rect.topleft = (self.x, self.y)
+    def move(self, keys):
+        if keys[pygame.K_LEFT]:
+            self.x -= SPEED
+        if keys[pygame.K_RIGHT]:
+            self.x += SPEED
+        if keys[pygame.K_UP]:
+            self.y -= SPEED  
+        if keys[pygame.K_DOWN]:
+            self.y += SPEED
 
     def collide(self, rect):
         return self.rect.colliderect(rect)
+    
+    def random_spawn(self):
+        board = Board()
+        while True:
+            x = random.randint(0, len(board.grid) - 1)
+            y = random.randint(0, len(board.grid[0]) - 1)
+            if board.grid[x][y] != 3 and board.grid[x][y] != 4:
+                self.x = y * SQUARE + START_X
+                self.y = x *  SQUARE + START_Y
+                self.rect.topleft = (self.x, self.y)
+                break
+            else:
+                continue
+        return (x, y)
        

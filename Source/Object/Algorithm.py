@@ -34,6 +34,8 @@ class Algorithm:
                 ny = y + dy
 
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in visited:
+                    if((nx, ny) == end):
+                        return path + [(x, y), (nx, ny)]
                     queue.append((nx, ny, path + [(x, y)]))
 
         return None
@@ -49,6 +51,12 @@ class Algorithm:
 
         rows, cols = len(grid), len(grid[0])
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Lên, Xuống, Trái, Phải
+        
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in path:
+                if((nx, ny) == end):
+                    return path + [(nx, ny)]
 
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
