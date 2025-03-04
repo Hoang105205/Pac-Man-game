@@ -1,6 +1,7 @@
 import pygame
 from constants import SPRITERATIO, SQUARE, START_X, START_Y, SPEED
 from Object.Board import Board
+from Object.Wall import Wall
 import random
 class Player:
     def __init__(self, x, y):
@@ -25,15 +26,28 @@ class Player:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-    def move(self, keys):
+    def move(self, keys, Walls):
+        
         if keys[pygame.K_LEFT]:
-            self.x -= SPEED
+            self.x -= SPEED 
         if keys[pygame.K_RIGHT]:
-            self.x += SPEED
+            self.x += SPEED 
         if keys[pygame.K_UP]:
-            self.y -= SPEED  
+            self.y -= SPEED 
         if keys[pygame.K_DOWN]:
-            self.y += SPEED
+            self.y += SPEED 
+        self.rect.topleft = (self.x, self.y)
+        # if Walls.check_collision(self.rect):
+        #     if keys[pygame.K_LEFT]:
+        #         self.x += SPEED * 10
+        #     if keys[pygame.K_RIGHT]:
+        #         self.x -= SPEED * 10
+        #     if keys[pygame.K_UP]:
+        #         self.y += SPEED * 10
+        #     if keys[pygame.K_DOWN]:
+        #         self.y -= SPEED * 10
+        #     self.rect.topleft = (self.x, self.y)
+
 
     def collide(self, rect):
         return self.rect.colliderect(rect)
@@ -51,4 +65,7 @@ class Player:
             else:
                 continue
         return (x, y)
+    
+    def get_position(self):
+        return (int((self.y - START_Y) / SQUARE), int((self.x - START_X) / SQUARE))
        

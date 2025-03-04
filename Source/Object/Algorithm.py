@@ -32,9 +32,8 @@ class Algorithm:
             for dx, dy in directions:
                 nx = x + dx
                 ny = y + dy
-
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in visited:
-                    if((nx, ny) == end):
+                    if(nx, ny) == end:
                         return path + [(x, y), (nx, ny)]
                     queue.append((nx, ny, path + [(x, y)]))
 

@@ -13,10 +13,10 @@ class Ghost:
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
-    def move(self, target_x, target_y):
+    def move(self, target_x, target_y, screen):
         # Di chuyển từng bước nhỏ
-        while (self.x, self.y) != (target_x, target_y):
-            if self.x < target_x: # qua phải
+        while(self.x, self.y) != (target_x, target_y):
+            if self.x < target_x: #qua phải
                 self.x += SPEED
             elif self.x > target_x: # qua trái
                 self.x -= SPEED
@@ -24,7 +24,13 @@ class Ghost:
                 self.y += SPEED
             elif self.y > target_y: # lên
                 self.y -= SPEED
-        self.rect.topleft = (self.x, self.y)
+            self.remove_ghost(screen)
+            self.rect.topleft = (self.x, self.y)
+            self.draw(screen)
+            pygame.display.update()
+
+    def remove_ghost(self, screen):
+        pygame.draw.rect(screen, (0, 0, 0), self.rect)
 
     def collide(self, rect):
         return self.rect.colliderect(rect)
