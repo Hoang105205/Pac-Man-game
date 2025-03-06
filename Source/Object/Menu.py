@@ -6,7 +6,7 @@ import copy
 import math
 from constants import EMPTY, FOOD, GHOST, START_X, START_Y, BOARD_HEIGHT, BOARD_WIDTH, SQUARE
 from Object.Ghost import Ghost
-from Object.Wall import Wall
+from collections import deque
 
 # ============ Class Algorithm ============
 from Object.Algorithm import Algorithm
@@ -163,12 +163,8 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_ghost = 17
-        j_ghost = 14
-        spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
+        Pacman = Player()
+        Ghost1 = Ghost(17, 14, "Object/images/Inky.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -180,16 +176,16 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        start = (i_ghost, j_ghost)
-        end = spawn_pacman
+        start = Ghost1.get_position()
+        end = Pacman.get_position()
 
         algorithm = Algorithm()
         result = algorithm.BFS(main_board, start, end)
 
         if result is not None:
             for i in range(len(result)):
-                target_y = result[i][0] * SQUARE + START_Y
-                target_x = result[i][1] * SQUARE + START_X
+                target_x = result[i][0]
+                target_y = result[i][1]
 
                 Ghost1.move(target_x, target_y, screen)
 
@@ -210,12 +206,9 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
-        i_ghost = 17
-        j_ghost = 15
-        spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
+        
+        Pacman = Player()
+        Ghost1 = Ghost(17, 15, "Object/images/Pinky.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -227,16 +220,16 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        start = (i_ghost, j_ghost)
-        end = spawn_pacman
+        start = Ghost1.get_position()
+        end = Pacman.get_position()
 
         algorithm = Algorithm()
         result = algorithm.DFS(main_board, start, end, path = None)
 
         if result is not None:
             for i in range(len(result)):
-                target_y = result[i][0] * SQUARE + START_Y
-                target_x = result[i][1] * SQUARE + START_X
+                target_x = result[i][0]
+                target_y = result[i][1]
                 Ghost1.move(target_x, target_y, screen)
                 
                 # Vẽ lại màn hình
@@ -258,12 +251,8 @@ class Menu:
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
-        i_ghost = 17
-        j_ghost = 14
-        spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
+        Pacman = Player()
+        Ghost1 = Ghost(17, 14, "Object/images/Clyde.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -275,17 +264,16 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        start = (i_ghost, j_ghost)
-        end = spawn_pacman
+        start = Ghost1.get_position()
+        end = Pacman.get_position()
 
         algorithm = Algorithm()
         result = algorithm.UCS(main_board, start, end)
 
         if result is not None:
             for i in range(len(result)):
-                target_y = result[i][0] * SQUARE + START_Y
-                target_x = result[i][1] * SQUARE + START_X
-
+                target_x = result[i][0]
+                target_y = result[i][1]
                 Ghost1.move(target_x, target_y, screen)
 
                 # Vẽ lại màn hình
@@ -306,12 +294,8 @@ class Menu:
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
-        i_ghost = 17
-        j_ghost = 14
-        spawn_ghost = (j_ghost, i_ghost)
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Ghost1 = Ghost(spawn_ghost[0] * SQUARE + START_X, spawn_ghost[1] * SQUARE + START_Y, "Object/images/Blinky.png")
+        Pacman = Player()
+        Ghost1 = Ghost(17, 14, "Object/images/Blinky.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -323,16 +307,16 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        start = (i_ghost, j_ghost)
-        end = spawn_pacman
+        start = Ghost1.get_position()
+        end = Pacman.get_position()
 
         algorithm = Algorithm()
         result = algorithm.ASTAR(main_board, start, end)
 
         if result is not None:
             for i in range(len(result)):
-                target_y = result[i][0] * SQUARE + START_Y
-                target_x = result[i][1] * SQUARE + START_X
+                target_x = result[i][0]
+                target_y = result[i][1]
 
                 Ghost1.move(target_x, target_y, screen)
 
@@ -354,33 +338,12 @@ class Menu:
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
-        #Blue Ghost
-        i_blue_ghost = 17
-        j_blue_ghost = 15
         
-        #Pink Ghost
-        i_pink_ghost = 17
-        j_pink_ghost = 12
-        
-        #Orange Ghost
-        i_orange_ghost = 16
-        j_orange_ghost = 15
-        
-        #Red Ghost
-        i_red_ghost = 16
-        j_red_ghost = 12
-        
-        spawn_blue_ghost = (j_blue_ghost, i_blue_ghost)
-        spawn_pink_ghost = (j_pink_ghost, i_pink_ghost)
-        spawn_orange_ghost = (j_orange_ghost, i_orange_ghost)
-        spawn_red_ghost = (j_red_ghost, i_red_ghost)
-        
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Blue_Ghost = Ghost(spawn_blue_ghost[0] * SQUARE + START_X, spawn_blue_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
-        Pink_Ghost = Ghost(spawn_pink_ghost[0] * SQUARE + START_X, spawn_pink_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
-        Orange_Ghost = Ghost(spawn_orange_ghost[0] * SQUARE + START_X, spawn_orange_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
-        Red_Ghost = Ghost(spawn_red_ghost[0] * SQUARE + START_X, spawn_red_ghost[1] * SQUARE + START_Y, "Object/images/Blinky.png")
+        Pacman = Player()
+        Blue_Ghost = Ghost(17, 15, "Object/images/Inky.png")
+        Pink_Ghost = Ghost(17, 12, "Object/images/Pinky.png")
+        Orange_Ghost = Ghost(16, 15, "Object/images/Clyde.png")
+        Red_Ghost = Ghost(16, 12, "Object/images/Blinky.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -395,11 +358,11 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        Blue_start = (i_blue_ghost, j_blue_ghost)
-        Pink_start = (i_pink_ghost, j_pink_ghost)
-        Orange_start = (i_orange_ghost, j_orange_ghost)
-        Red_start = (i_red_ghost, j_red_ghost)
-        end = spawn_pacman
+        Blue_start = Blue_Ghost.get_position()
+        Pink_start = Pink_Ghost.get_position()
+        Orange_start = Orange_Ghost.get_position()
+        Red_start = Red_Ghost.get_position()
+        end = Pacman.get_position()
 
         algorithm = Algorithm()
         Blue_result = algorithm.BFS(main_board, Blue_start, end)
@@ -411,23 +374,23 @@ class Menu:
         if Blue_result is not None or Pink_result is not None or Orange_result is not None or Red_result is not None:
             for i in range(max_length):
                 if i < len(Blue_result):
-                    target_y = Blue_result[i][0] * SQUARE + START_Y
-                    target_x = Blue_result[i][1] * SQUARE + START_X
+                    target_x = Blue_result[i][0]
+                    target_y = Blue_result[i][1] 
                     Blue_Ghost.move(target_x, target_y, screen)
                     
                 if i < len(Pink_result):
-                    target_y = Pink_result[i][0] * SQUARE + START_Y
-                    target_x = Pink_result[i][1] * SQUARE + START_X
+                    target_x = Pink_result[i][0]
+                    target_y = Pink_result[i][1]
                     Pink_Ghost.move(target_x, target_y, screen)
                     
                 if i < len(Orange_result):
-                    target_y = Orange_result[i][0] * SQUARE + START_Y
-                    target_x = Orange_result[i][1] * SQUARE + START_X
+                    target_x = Orange_result[i][0]
+                    target_y = Orange_result[i][1]
                     Orange_Ghost.move(target_x, target_y, screen)
                     
                 if i < len(Red_result):
-                    target_y = Red_result[i][0] * SQUARE + START_Y
-                    target_x = Red_result[i][1] * SQUARE + START_X
+                    target_x = Red_result[i][0]
+                    target_y = Red_result[i][1]
                     Red_Ghost.move(target_x, target_y, screen)
 
                 # Vẽ lại màn hình
@@ -451,33 +414,12 @@ class Menu:
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
-        #Blue Ghost
-        i_blue_ghost = 16
-        j_blue_ghost = 15
         
-        #Pink Ghost
-        i_pink_ghost = 16
-        j_pink_ghost = 12
-        
-        #Orange Ghost
-        i_orange_ghost = 17
-        j_orange_ghost = 15
-        
-        #Red Ghost
-        i_red_ghost = 17
-        j_red_ghost = 12
-        
-        spawn_blue_ghost = (j_blue_ghost, i_blue_ghost)
-        spawn_pink_ghost = (j_pink_ghost, i_pink_ghost)
-        spawn_orange_ghost = (j_orange_ghost, i_orange_ghost)
-        spawn_red_ghost = (j_red_ghost, i_red_ghost)
-        
-        Pacman = Player(0,0)
-        spawn_pacman = Pacman.random_spawn()
-        Blue_Ghost = Ghost(spawn_blue_ghost[0] * SQUARE + START_X, spawn_blue_ghost[1] * SQUARE + START_Y, "Object/images/Inky.png")
-        Pink_Ghost = Ghost(spawn_pink_ghost[0] * SQUARE + START_X, spawn_pink_ghost[1] * SQUARE + START_Y, "Object/images/Pinky.png")
-        Orange_Ghost = Ghost(spawn_orange_ghost[0] * SQUARE + START_X, spawn_orange_ghost[1] * SQUARE + START_Y, "Object/images/Clyde.png")
-        Red_Ghost = Ghost(spawn_red_ghost[0] * SQUARE + START_X, spawn_red_ghost[1] * SQUARE + START_Y, "Object/images/Blinky.png")
+        Pacman = Player()
+        Blue_Ghost = Ghost(16, 15, "Object/images/Inky.png")
+        Pink_Ghost = Ghost(16, 12, "Object/images/Pinky.png")
+        Orange_Ghost = Ghost(17, 15, "Object/images/Clyde.png")
+        Red_Ghost = Ghost(17, 12, "Object/images/Blinky.png")
 
         # --------------- Vẽ bảng ---------------
         screen.fill((0, 0, 0))
@@ -492,74 +434,103 @@ class Menu:
         pygame.display.update()
 
         # --------------- Game loop ---------------
-        Blue_start = (i_blue_ghost, j_blue_ghost)
-        Pink_start = (i_pink_ghost, j_pink_ghost)
-        Orange_start = (i_orange_ghost, j_orange_ghost)
-        Red_start = (i_red_ghost, j_red_ghost)
-        i = 0
-        end = spawn_pacman
+        Blue_start = Blue_Ghost.get_position()
+        Pink_start = Pink_Ghost.get_position()
+        Orange_start = Orange_Ghost.get_position()
+        Red_start = Red_Ghost.get_position()
+        current_step = 0
+        end = Pacman.get_position()
         board = Board()
         algorithm = Algorithm()
-        Walls = Wall(board)
+        Blue_result = algorithm.BFS(main_board, Blue_start, end)
+        Pink_result = algorithm.DFS(main_board, Pink_start, end, path = None)
+        Orange_result = algorithm.UCS(main_board, Orange_start, end)
+        Red_result = algorithm.ASTAR(main_board, Red_start, end)
+        new_end = end
+        clock = pygame.time.Clock()
+        
+        # Vẽ màn hình
+        screen.fill((0, 0, 0))
+        self.draw_board()
+        Pacman.draw(screen)
+        Blue_Ghost.draw(screen)
+        Pink_Ghost.draw(screen)
+        Orange_Ghost.draw(screen)
+        Red_Ghost.draw(screen)
+        pygame.display.update()
+        
         while True:
-            pygame.event.get()
-            keys = pygame.key.get_pressed()
-            Pacman.move(keys, Walls)
+            
+            # Xử lý sự kiện
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.KEYDOWN:
+                    if event.key in (pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT):
+                        Pacman.change_direction(event.key, screen)
+
+            
+            # Di chuyển Pac-Man
+            Pacman.move(screen)
             new_end = Pacman.get_position()
             
-            if(new_end != end):
-                i = 0
-                # Vẽ lại màn hình
-                screen.fill((0, 0, 0))
-                self.draw_board()
-                Pacman.draw(screen)
-                Blue_Ghost.draw(screen)
-                Pink_Ghost.draw(screen)
-                Orange_Ghost.draw(screen)
-                Red_Ghost.draw(screen)
-                pygame.display.update()
-                
-            Blue_result = algorithm.BFS(main_board, Blue_start, new_end)
-            Pink_result = algorithm.DFS(main_board, Pink_start, new_end, path = None)
-            Orange_result = algorithm.UCS(main_board, Orange_start, new_end)
-            Red_result = algorithm.ASTAR(main_board, Red_start, new_end)
+            # Nếu Pac-Man thay đổi vị trí, cập nhật đường đi mới của Ghosts
+            if new_end != end:
+                current_step = 1
+                end = new_end
+                # Tính toán đường đi mới cho Ghosts
+                Blue_result = algorithm.BFS(main_board, Blue_start, end)
+                Pink_result = algorithm.DFS(main_board, Pink_start, end, path=None)
+                Orange_result = algorithm.UCS(main_board, Orange_start, end)
+                Red_result = algorithm.ASTAR(main_board, Red_start, end)
+            
+            
+            # Tính độ dài lớn nhất của các đường đi
             max_length = max(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
-            if Blue_result is not None or Pink_result is not None or Orange_result is not None or Red_result is not None: 
-                
-                if i < len(Blue_result):
-                    target_y = Blue_result[i][0] * SQUARE + START_Y
-                    target_x = Blue_result[i][1] * SQUARE + START_X
+
+            # Di chuyển từng Ghost nếu còn đường đi
+            if current_step < max_length:
+                if current_step < len(Blue_result):
+                    target_x = Blue_result[current_step][0]
+                    target_y = Blue_result[current_step][1]
                     Blue_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Pink_result):
-                    target_y = Pink_result[i][0] * SQUARE + START_Y
-                    target_x = Pink_result[i][1] * SQUARE + START_X
+                    Blue_start = Blue_Ghost.get_position()
+
+                if current_step < len(Pink_result):
+                    target_x = Pink_result[current_step][0]
+                    target_y = Pink_result[current_step][1]
                     Pink_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Orange_result):
-                    target_y = Orange_result[i][0] * SQUARE + START_Y
-                    target_x = Orange_result[i][1] * SQUARE + START_X
+                    Pink_start = Pink_Ghost.get_position()
+
+                if current_step < len(Orange_result):
+                    target_x = Orange_result[current_step][0]
+                    target_y = Orange_result[current_step][1]
                     Orange_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Red_result):
-                    target_y = Red_result[i][0] * SQUARE + START_Y
-                    target_x = Red_result[i][1] * SQUARE + START_X
+                    Orange_start = Orange_Ghost.get_position()
+
+                if current_step < len(Red_result):
+                    target_x = Red_result[current_step][0]
+                    target_y = Red_result[current_step][1]
                     Red_Ghost.move(target_x, target_y, screen)
+                    Red_start = Red_Ghost.get_position()
 
-                # Vẽ lại màn hình
-                screen.fill((0, 0, 0))
-                self.draw_board()
-                Pacman.draw(screen)
-                Blue_Ghost.draw(screen)
-                Pink_Ghost.draw(screen)
-                Orange_Ghost.draw(screen)
-                Red_Ghost.draw(screen)
-                pygame.display.update()
-                i += 1
-                if(i > max_length):
-                    break
 
-        pygame.time.wait(3000)
+            # Vẽ lại màn hình
+            screen.fill((0, 0, 0))
+            self.draw_board()
+            Pacman.draw(screen)
+            Blue_Ghost.draw(screen)
+            Pink_Ghost.draw(screen)
+            Orange_Ghost.draw(screen)
+            Red_Ghost.draw(screen)
+            pygame.display.update()
+            current_step += 1  # Tăng bước đi của Ghosts
+            if(current_step > max_length):
+                break
+
+            # Giới hạn tốc độ game (240 FPS)
+            clock.tick(240)
+
+        pygame.time.wait(30)
 
 
     # ============ Các hàm vẽ màn hình ============

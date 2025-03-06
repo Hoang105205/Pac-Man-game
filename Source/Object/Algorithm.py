@@ -32,8 +32,15 @@ class Algorithm:
             for dx, dy in directions:
                 nx = x + dx
                 ny = y + dy
+                
+                if(nx == 17 and ny == 28):
+                    ny = 0
+                
+                if(nx == 17 and ny == -1):
+                    ny = 27
+
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in visited:
-                    if(nx, ny) == end:
+                    if((nx, ny) == end):
                         return path + [(x, y), (nx, ny)]
                     queue.append((nx, ny, path + [(x, y)]))
 
@@ -53,13 +60,20 @@ class Algorithm:
         
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
+            if nx == 17 and ny == 28:
+                ny = 0
+            elif nx == 17 and ny == -1:
+                ny = 27
             if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in path:
                 if((nx, ny) == end):
                     return path + [(nx, ny)]
 
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-
+            if nx == 17 and ny == 28:
+                ny = 0
+            elif nx == 17 and ny == -1:
+                ny = 27
             # Kiểm tra nếu ô hợp lệ và chưa xuất hiện trong đường đi hiện tại
             if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in path:
                 new_path = self.DFS(grid, (nx, ny), end, path + [(nx, ny)])
@@ -91,7 +105,10 @@ class Algorithm:
 
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
-
+                if nx == 17 and ny == 28:
+                    ny = 0
+                elif nx == 17 and ny == -1:
+                    ny = 27
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
                     heapq.heappush(priority_queue, (cost + 1, (nx, ny), path + [(x, y)]))
@@ -126,6 +143,10 @@ class Algorithm:
 
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
+                if nx == 17 and ny == 28:
+                    ny = 0
+                elif nx == 17 and ny == -1:
+                    ny = 27
 
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
