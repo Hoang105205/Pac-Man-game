@@ -119,21 +119,18 @@ class Player:
         if keys == pygame.K_UP and self.board.grid[self.row_index - 1][self.col_index] != 3 and self.direction != "UP":
             self.direction = "UP"
             self.rotation_angle = 90
-            self.rotate(screen)
         elif keys == pygame.K_DOWN and self.board.grid[self.row_index + 1][self.col_index] != 3 and self.direction != "DOWN":
             self.direction = "DOWN"
             self.rotation_angle = -90
-            self.rotate(screen)
         elif keys == pygame.K_LEFT and self.col_index > 0 and self.direction != "LEFT":
             if(self.board.grid[self.row_index][self.col_index - 1] != 3):
                 self.direction = "LEFT"
                 self.rotation_angle = 180
-                self.rotate(screen)
         elif keys == pygame.K_RIGHT and self.col_index < 27 and self.direction != "RIGHT":
             if(self.board.grid[self.row_index][self.col_index + 1] != 3):
                 self.direction = "RIGHT"
                 self.rotation_angle = 0
-                self.rotate(screen)
+        self.rotate(screen)
                 
     def rotate(self, screen):
         self.image = pygame.transform.rotate(self.original_image, self.rotation_angle)
