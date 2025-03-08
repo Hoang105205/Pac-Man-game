@@ -6,7 +6,7 @@ import copy
 import math
 from constants import EMPTY, FOOD, GHOST, START_X, START_Y, BOARD_HEIGHT, BOARD_WIDTH, SQUARE
 from Object.Ghost import Ghost
-from collections import deque
+import random
 
 # ============ Class Algorithm ============
 from Object.Algorithm import Algorithm
@@ -99,6 +99,7 @@ class Menu:
         self.done = False
         self.current_screen = 1
         self.screen = screen
+        self.PacMan_spawn_list = []
 
         self.menu_button_size = (150, 100)
 
@@ -155,7 +156,19 @@ class Menu:
         self.map_name = []
         self.current_map = 0
         self.current_level = 0
-
+        
+    def create_PacMan_spawn_list(self):
+        while True:
+            if len(self.PacMan_spawn_list) == 5:
+                break
+            x = random.randint(0, len(self.board.grid) - 1)
+            y = random.randint(0, len(self.board.grid[0]) - 1)
+            if self.board.grid[x][y] != 3 and self.board.grid[x][y] != 4:
+                self.PacMan_spawn_list.append((x, y))
+            else:
+                continue
+    
+    
     def level_1_ingame(self):
         # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
 
@@ -163,6 +176,7 @@ class Menu:
         main_board = copy.deepcopy(board.grid_algorithm)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
+        
         Pacman = Player()
         Ghost1 = Ghost(17, 14, "Object/images/Inky.png")
 
@@ -196,7 +210,7 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(3000)
+        pygame.time.wait(30)
     
     
     def level_2_ingame(self):
@@ -283,7 +297,7 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(3000)
+        pygame.time.wait(30)
     
     
     def level_4_ingame(self):
@@ -327,7 +341,7 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(3000)
+        pygame.time.wait(30)
         
     
     def level_5_ingame(self):
@@ -403,14 +417,14 @@ class Menu:
                 Red_Ghost.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(3000)
+        pygame.time.wait(30)
         
-       # ============ Dang hoan thien ============ 
     def level_6_ingame(self):
          # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
 
         board = Board()
         main_board = copy.deepcopy(board.grid_algorithm)
+        original_board = copy.deepcopy(board.grid)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
@@ -458,20 +472,21 @@ class Menu:
         Orange_Ghost.draw(screen)
         Red_Ghost.draw(screen)
         pygame.display.update()
+        running = True
         
-        while True:
-            
+        while running:
             # Xử lý sự kiện
-            events = pygame.event.get()
-            for event in events:
+            for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key in (pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT):
-                        Pacman.change_direction(event.key, screen)
-
+                        Pacman.change_direction(event.key)
             
+            Pacman.update()                     
             # Di chuyển Pac-Man
             Pacman.move(screen)
             new_end = Pacman.get_position()
+            if(self.board.grid[new_end[0]][new_end[1]] == 2):
+                self.board.grid[new_end[0]][new_end[1]] = 1
             
             # Nếu Pac-Man thay đổi vị trí, cập nhật đường đi mới của Ghosts
             if new_end != end:
@@ -485,10 +500,10 @@ class Menu:
             
             
             # Tính độ dài lớn nhất của các đường đi
-            max_length = max(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
+            min_length = min(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
 
             # Di chuyển từng Ghost nếu còn đường đi
-            if current_step < max_length:
+            if current_step < min_length:
                 if current_step < len(Blue_result):
                     target_x = Blue_result[current_step][0]
                     target_y = Blue_result[current_step][1]
@@ -496,20 +511,35 @@ class Menu:
                     Blue_start = Blue_Ghost.get_position()
 
                 if current_step < len(Pink_result):
-                    target_x = Pink_result[current_step][0]
-                    target_y = Pink_result[current_step][1]
+                    if(Pink_result[current_step] == Blue_Ghost.get_position()):
+                        target_x = Pink_result[0][0]
+                        target_y = Pink_result[0][1]
+                    else:
+                        target_x = Pink_result[current_step][0]
+                        target_y = Pink_result[current_step][1]
                     Pink_Ghost.move(target_x, target_y, screen)
                     Pink_start = Pink_Ghost.get_position()
 
                 if current_step < len(Orange_result):
-                    target_x = Orange_result[current_step][0]
-                    target_y = Orange_result[current_step][1]
+                    if(Orange_result[current_step] == Blue_Ghost.get_position() or 
+                       Orange_result[current_step] == Pink_Ghost.get_position()):
+                        target_x = Orange_result[0][0]
+                        target_y = Orange_result[0][1]
+                    else:
+                        target_x = Orange_result[current_step][0]
+                        target_y = Orange_result[current_step][1]
                     Orange_Ghost.move(target_x, target_y, screen)
                     Orange_start = Orange_Ghost.get_position()
 
                 if current_step < len(Red_result):
-                    target_x = Red_result[current_step][0]
-                    target_y = Red_result[current_step][1]
+                    if(Red_result[current_step] == Blue_Ghost.get_position() or 
+                       Red_result[current_step] == Pink_Ghost.get_position() or
+                       Red_result[current_step] == Orange_Ghost.get_position()):
+                        target_x = Red_result[0][0]
+                        target_y = Red_result[0][1]
+                    else:
+                        target_x = Red_result[current_step][0]
+                        target_y = Red_result[current_step][1]
                     Red_Ghost.move(target_x, target_y, screen)
                     Red_start = Red_Ghost.get_position()
 
@@ -524,12 +554,14 @@ class Menu:
             Red_Ghost.draw(screen)
             pygame.display.update()
             current_step += 1  # Tăng bước đi của Ghosts
-            if(current_step > max_length):
-                break
+            if(current_step == min_length):
+                running = False
 
-            # Giới hạn tốc độ game (240 FPS)
-            clock.tick(240)
-
+            # Giới hạn tốc độ game (60 FPS)
+            clock.tick(60)
+            
+        # Trả về bảng ban đầu
+        self.board.grid = original_board
         pygame.time.wait(30)
 
 
@@ -552,7 +584,10 @@ class Menu:
     
     # ============ Hàm chạy chính ============
     def run(self):
-
+        
+        # Tạo danh sách vị trí xuất hiện của Pacman
+        self.create_PacMan_spawn_list()
+        
         while not self.done:
             self.clicked = False
             for event in pygame.event.get():
@@ -584,7 +619,10 @@ class Menu:
 
                     #Display image of tile
                     screen.blit(tileImage, (j * SQUARE, i * SQUARE, SQUARE, SQUARE))
+                elif self.board.grid[i][j] == 2 or self.board.grid[i][j] == 6: # Draw food
+                    pygame.draw.circle(screen, (255, 255, 0), (j * SQUARE + SQUARE // 2, i * SQUARE + SQUARE // 2), 5)
                 
                 currentTile += 1
 
+    
 

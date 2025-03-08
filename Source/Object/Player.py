@@ -2,6 +2,7 @@ import pygame
 from constants import SPRITERATIO, SQUARE, START_X, START_Y, SPEED
 from Object.Board import Board
 import random
+import asyncio
 class Player:
     def __init__(self):
         
@@ -19,41 +20,39 @@ class Player:
             
         # Xác định hướng đi ban đầu
         self.rotation_angle = 0
-        if self.board.grid[self.row_index - 1][self.col_index] != 3:
-            self.direction = "UP"
-            self.rotation_angle = 90
-        elif self.board.grid[self.row_index + 1][self.col_index] != 3:
-            self.direction = "DOWN"
-            self.rotation_angle = -90
-        elif self.board.grid[self.row_index][self.col_index - 1] != 3:
+        if self.board.grid[self.row_index][self.col_index - 1] != 3:
             self.direction = "LEFT"
             self.rotation_angle = 180
         elif self.board.grid[self.row_index][self.col_index + 1] != 3:
             self.direction = "RIGHT"
             self.rotation_angle = 0
+        elif self.board.grid[self.row_index - 1][self.col_index] != 3:
+            self.direction = "UP"
+            self.rotation_angle = 90
+        elif self.board.grid[self.row_index + 1][self.col_index] != 3:
+            self.direction = "DOWN"
+            self.rotation_angle = -90
 
         # Load ảnh
         self.images = [pygame.image.load(f"Object/images/{i}.png").convert_alpha() for i in range(1, 5)]  # 4 ảnh từ 1.png đến 4.png
+        self.original_images = [img.copy() for img in self.images] # Sao chép ảnh gốc
         self.current_frame = 0  # Chỉ số frame hiện tại
         self.image = self.images[self.current_frame]  # Ảnh hiện tại
-        self.original_image = self.images[self.current_frame] # Ảnh ban đầu
         self.image = pygame.transform.scale(self.image, (SQUARE * SPRITERATIO, SQUARE * SPRITERATIO))
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.x, self.y)
-        self.animation_speed = 10  # Số frame mỗi lần đổi ảnh
+        self.animation_speed = 0.5  # Số frame mỗi lần đổi ảnh
         self.frame_counter = 0  # Đếm số frame để đổi ảnh
+        self.rotate() # Xoay ảnh theo hướng đi ban đầu
     
-    def update(self, screen):
+    def update(self):
         self.frame_counter += 1
         if self.frame_counter >= self.animation_speed:
             self.frame_counter = 0  # Reset đếm frame
             self.current_frame = (self.current_frame + 1) % len(self.images)  # Chuyển ảnh tiếp theo
             self.image = self.images[self.current_frame]  # Cập nhật ảnh
+            self.rotate()
             self.image = pygame.transform.scale(self.image, (SQUARE * SPRITERATIO, SQUARE * SPRITERATIO))
-        self.remove_player(screen)
-        self.rect.topleft = (self.x, self.y)
-        self.draw(screen)
-        pygame.display.update()
 
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
@@ -62,17 +61,9 @@ class Player:
         if self.direction == "LEFT" and self.row_index == 17 and self.col_index == 0:
             self.x = 27 * SQUARE + START_X
             self.col_index = 27
-            self.remove_player(screen)
-            self.rect.topleft = (self.x, self.y)
-            self.draw(screen)
-            pygame.display.update()
         elif self.direction == "RIGHT" and self.row_index == 17 and self.col_index == 27:
             self.x = 0 * SQUARE + START_X
             self.col_index = 0
-            self.remove_player(screen)
-            self.rect.topleft = (self.x, self.y)
-            self.draw(screen)
-            pygame.display.update()
         else:
             target_x = self.x
             target_y = self.y
@@ -108,14 +99,13 @@ class Player:
     def collide(self, rect):
         return self.rect.colliderect(rect)
     
-    
     def get_position(self):
         return (self.row_index, self.col_index)
     
     def remove_player(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect)
         
-    def change_direction(self, keys, screen):
+    def change_direction(self, keys):
         if keys == pygame.K_UP and self.board.grid[self.row_index - 1][self.col_index] != 3 and self.direction != "UP":
             self.direction = "UP"
             self.rotation_angle = 90
@@ -130,13 +120,7 @@ class Player:
             if(self.board.grid[self.row_index][self.col_index + 1] != 3):
                 self.direction = "RIGHT"
                 self.rotation_angle = 0
-        self.rotate(screen)
+        self.rotate()
                 
-    def rotate(self, screen):
-        self.image = pygame.transform.rotate(self.original_image, self.rotation_angle)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (self.x, self.y)
-        self.remove_player(screen)
-        self.draw(screen)
-        pygame.display.update()
-       
+    def rotate(self):
+        self.image = pygame.transform.rotate(self.original_images[self.current_frame], self.rotation_angle)
