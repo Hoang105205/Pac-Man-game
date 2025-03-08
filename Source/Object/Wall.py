@@ -1,20 +1,18 @@
 import pygame
 
-from constants import SIZE_WALL, MARGIN
+from Object.Board import Board
+from constants import SQUARE, SPRITEOFFSET
+
 
 
 class Wall:
-    def __init__(self, row, col, color):
-        self.image = pygame.Surface([SIZE_WALL, SIZE_WALL])
-        # self.image.fill(color)
-        pygame.draw.rect(self.image, color, (0, 0, SIZE_WALL, SIZE_WALL), 1)
+    def __init__(self, board):
+        self.walls = []
+        for row in range(len(board.grid)):
+            for col in range(len(board.grid[0])):
+                if board.grid[row][col] == 3:
+                    wall_rect = pygame.Rect(SPRITEOFFSET + col * SQUARE, SPRITEOFFSET + row * SQUARE, SQUARE, SQUARE)
+                    self.walls.append(wall_rect)
 
-        self.row = row
-        self.col = col
-
-        self.rect = self.image.get_rect()
-        self.rect.top = row * SIZE_WALL + MARGIN["TOP"]
-        self.rect.left = col * SIZE_WALL + MARGIN["LEFT"]
-
-    def draw(self, screen):
-        screen.blit(self.image, (self.rect.left, self.rect.top))
+    def check_collision(self, rect):
+        return any(wall.colliderect(rect) for wall in self.walls)
