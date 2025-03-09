@@ -1,8 +1,7 @@
 import pygame
-from constants import SPRITERATIO, SQUARE, START_X, START_Y, SPEED
+from constants import SPRITERATIO, SQUARE, SPRITEOFFSET, SPEED
 from Object.Board import Board
 import random
-import asyncio
 class Player:
     def __init__(self):
         
@@ -12,8 +11,8 @@ class Player:
             self.row_index = random.randint(0, len(self.board.grid) - 1)
             self.col_index = random.randint(0, len(self.board.grid[0]) - 1)
             if self.board.grid[self.row_index][self.col_index] != 3 and self.board.grid[self.row_index][self.col_index] != 4:
-                self.x = self.col_index * SQUARE + START_X
-                self.y = self.row_index *  SQUARE + START_Y
+                self.x = self.col_index * SQUARE + SPRITEOFFSET
+                self.y = self.row_index *  SQUARE + SPRITEOFFSET
                 break
             else:
                 continue
@@ -38,7 +37,7 @@ class Player:
         self.original_images = [img.copy() for img in self.images] # Sao chép ảnh gốc
         self.current_frame = 0  # Chỉ số frame hiện tại
         self.image = self.images[self.current_frame]  # Ảnh hiện tại
-        self.image = pygame.transform.scale(self.image, (SQUARE * SPRITERATIO, SQUARE * SPRITERATIO))
+        self.image = pygame.transform.scale(self.image, (int(SQUARE * SPRITERATIO), int(SQUARE * SPRITERATIO)))
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.x, self.y)
         self.animation_speed = 0.5  # Số frame mỗi lần đổi ảnh
@@ -52,17 +51,17 @@ class Player:
             self.current_frame = (self.current_frame + 1) % len(self.images)  # Chuyển ảnh tiếp theo
             self.image = self.images[self.current_frame]  # Cập nhật ảnh
             self.rotate()
-            self.image = pygame.transform.scale(self.image, (SQUARE * SPRITERATIO, SQUARE * SPRITERATIO))
+            self.image = pygame.transform.scale(self.image, (int(SQUARE * SPRITERATIO), int(SQUARE * SPRITERATIO)))
 
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
 
     def move(self, screen):
         if self.direction == "LEFT" and self.row_index == 17 and self.col_index == 0:
-            self.x = 27 * SQUARE + START_X
+            self.x = 27 * SQUARE + SPRITEOFFSET
             self.col_index = 27
         elif self.direction == "RIGHT" and self.row_index == 17 and self.col_index == 27:
-            self.x = 0 * SQUARE + START_X
+            self.x = 0 * SQUARE + SPRITEOFFSET
             self.col_index = 0
         else:
             target_x = self.x

@@ -4,12 +4,15 @@ from Object.Board import Board
 from Object.Player import Player
 import copy
 import math
-from constants import EMPTY, FOOD, GHOST, START_X, START_Y, BOARD_HEIGHT, BOARD_WIDTH, SQUARE
+from constants import BOARD_HEIGHT, BOARD_WIDTH, SQUARE
 from Object.Ghost import Ghost
 import random
 
 # ============ Class Algorithm ============
 from Object.Algorithm import Algorithm
+import time
+import tracemalloc
+import timeit
 
 
 
@@ -24,6 +27,12 @@ pygame.display.set_caption("Game Menu")
 # Load background
 background = pygame.image.load("Object/images/home_bg.png")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+ending_background = pygame.image.load("Object/images/end_screen.jpg")
+ending_background = pygame.transform.scale(ending_background, (WIDTH, HEIGHT))
+win_background = pygame.image.load("Object/images/win.jpg")
+win_background = pygame.transform.scale(win_background, (WIDTH, HEIGHT))
+lose_background = pygame.image.load("Object/images/gameover_bg.png")
+lose_background = pygame.transform.scale(lose_background, (WIDTH, HEIGHT))
 
 # Fonts
 font = pygame.font.SysFont('Arial', 40)
@@ -31,6 +40,9 @@ font = pygame.font.SysFont('Arial', 40)
 # Màu sắc
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
 class Button:
     def __init__(self, x, y, width, height, screen, buttonText="Button", onClickFunction=None):
@@ -86,8 +98,6 @@ class Button:
         # Hiển thị nút lên màn hình
         self.screen.blit(self.buttonSurface, self.buttonRect)
         
-
-
 
 
 class Menu:
@@ -157,17 +167,11 @@ class Menu:
         self.current_map = 0
         self.current_level = 0
         
-    def create_PacMan_spawn_list(self):
-        while True:
-            if len(self.PacMan_spawn_list) == 5:
-                break
-            x = random.randint(0, len(self.board.grid) - 1)
-            y = random.randint(0, len(self.board.grid[0]) - 1)
-            if self.board.grid[x][y] != 3 and self.board.grid[x][y] != 4:
-                self.PacMan_spawn_list.append((x, y))
-            else:
-                continue
-    
+    def draw_food(self):
+        for i in range(3, len(self.board.grid) - 2):
+            for j in range(len(self.board.grid[0])):
+                if(self.board.grid[i][j] == 2 or self.board.grid[i][j] == 6):
+                    pygame.draw.circle(screen, (255, 255, 0), (j * SQUARE + SQUARE // 2, i * SQUARE + SQUARE // 2), 5)
     
     def level_1_ingame(self):
         # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
@@ -194,7 +198,19 @@ class Menu:
         end = Pacman.get_position()
 
         algorithm = Algorithm()
+
+        #Calculate time cost
+        execution_time = timeit.timeit(lambda: algorithm.BFS(main_board, start, end), number=1)
+
+        #Calculate memory cost
+        tracemalloc.start()
+
         result = algorithm.BFS(main_board, start, end)
+
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        memory_usage = peak # Bytes
 
         if result is not None:
             for i in range(len(result)):
@@ -210,7 +226,9 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(30)
+        pygame.time.wait(1000)
+        
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "BFS")
     
     
     def level_2_ingame(self):
@@ -238,7 +256,18 @@ class Menu:
         end = Pacman.get_position()
 
         algorithm = Algorithm()
-        result = algorithm.DFS(main_board, start, end, path = None)
+        #Calculate time cost
+        execution_time = timeit.timeit(lambda: algorithm.DFS(main_board, start, end), number=1)
+
+        #Calculate memory cost
+        tracemalloc.start()
+
+        result = algorithm.DFS(main_board, start, end)
+
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        memory_usage = peak # Bytes
 
         if result is not None:
             for i in range(len(result)):
@@ -254,7 +283,9 @@ class Menu:
                 pygame.display.update()
 
 
-        pygame.time.wait(3000)
+        pygame.time.wait(1000)
+
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "DFS")
     
     
     def level_3_ingame(self):
@@ -282,7 +313,18 @@ class Menu:
         end = Pacman.get_position()
 
         algorithm = Algorithm()
+        #Calculate time cost
+        execution_time = timeit.timeit(lambda: algorithm.UCS(main_board, start, end), number=1)
+
+        #Calculate memory cost
+        tracemalloc.start()
+
         result = algorithm.UCS(main_board, start, end)
+
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        memory_usage = peak # Bytes
 
         if result is not None:
             for i in range(len(result)):
@@ -297,7 +339,9 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(30)
+        pygame.time.wait(1000)
+
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "UCS")
     
     
     def level_4_ingame(self):
@@ -325,7 +369,18 @@ class Menu:
         end = Pacman.get_position()
 
         algorithm = Algorithm()
+        #Calculate time cost
+        execution_time = timeit.timeit(lambda: algorithm.ASTAR(main_board, start, end), number=1)
+
+        #Calculate memory cost
+        tracemalloc.start()
+
         result = algorithm.ASTAR(main_board, start, end)
+
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+
+        memory_usage = peak # Bytes
 
         if result is not None:
             for i in range(len(result)):
@@ -341,7 +396,9 @@ class Menu:
                 Ghost1.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(30)
+        pygame.time.wait(1000)
+
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "A*")
         
     
     def level_5_ingame(self):
@@ -383,30 +440,66 @@ class Menu:
         Pink_result = algorithm.DFS(main_board, Pink_start, end, path = None)
         Orange_result = algorithm.UCS(main_board, Orange_start, end)
         Red_result = algorithm.ASTAR(main_board, Red_start, end)
-        max_length = max(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
 
         if Blue_result is not None or Pink_result is not None or Orange_result is not None or Red_result is not None:
-            for i in range(max_length):
-                if i < len(Blue_result):
-                    target_x = Blue_result[i][0]
-                    target_y = Blue_result[i][1] 
+            blue_step = 1
+            pink_step = 1
+            orange_step = 1
+            red_step = 1
+            while blue_step < len(Blue_result) or pink_step < len(Pink_result) or orange_step < len(Orange_result) or red_step < len(Red_result):
+                # Di chuyển từng Ghost nếu còn đường đi
+                if blue_step < len(Blue_result):
+                    if(Blue_Ghost.check_collision(
+                            Blue_result[blue_step],
+                            Pink_result, pink_step,
+                            Orange_result, orange_step, 
+                            Red_result, red_step)):
+                        blue_step -= 1
+                        
+                    target_x = Blue_result[blue_step][0]
+                    target_y = Blue_result[blue_step][1]    
                     Blue_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Pink_result):
-                    target_x = Pink_result[i][0]
-                    target_y = Pink_result[i][1]
-                    Pink_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Orange_result):
-                    target_x = Orange_result[i][0]
-                    target_y = Orange_result[i][1]
-                    Orange_Ghost.move(target_x, target_y, screen)
-                    
-                if i < len(Red_result):
-                    target_x = Red_result[i][0]
-                    target_y = Red_result[i][1]
-                    Red_Ghost.move(target_x, target_y, screen)
+                    blue_step += 1
 
+                if pink_step < len(Pink_result):
+                    if(Pink_Ghost.check_collision(
+                            Pink_result[pink_step], 
+                            Blue_result, blue_step,
+                            Orange_result, orange_step,
+                            Red_result, red_step)):
+                        pink_step -= 1
+                    
+                    target_x = Pink_result[pink_step][0]
+                    target_y = Pink_result[pink_step][1]
+                    Pink_Ghost.move(target_x, target_y, screen)
+                    pink_step += 1
+
+                if orange_step < len(Orange_result):
+                    if(Orange_Ghost.check_collision(
+                            Orange_result[orange_step], 
+                            Blue_result, blue_step,
+                            Pink_result, pink_step,
+                            Red_result, red_step)):
+                        orange_step -= 1
+            
+                    target_x = Orange_result[orange_step][0]
+                    target_y = Orange_result[orange_step][1]
+                    Orange_Ghost.move(target_x, target_y, screen)
+                    orange_step += 1
+
+                if red_step < len(Red_result):
+                    if(Red_Ghost.check_collision(
+                            Red_result[red_step], 
+                            Blue_result, blue_step,
+                            Pink_result, pink_step,
+                            Orange_result, orange_step)):
+                        red_step -= 1
+                    
+                    target_x = Red_result[red_step][0]
+                    target_y = Red_result[red_step][1]
+                    Red_Ghost.move(target_x, target_y, screen)
+                    red_step += 1
+                
                 # Vẽ lại màn hình
                 screen.fill((0, 0, 0))
                 self.draw_board()
@@ -417,14 +510,15 @@ class Menu:
                 Red_Ghost.draw(screen)
                 pygame.display.update()
 
-        pygame.time.wait(30)
+        pygame.time.wait(100)
+
+        self.draw_lose_screen()
         
     def level_6_ingame(self):
          # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
 
         board = Board()
         main_board = copy.deepcopy(board.grid_algorithm)
-        original_board = copy.deepcopy(board.grid)
         
         # --------------- Vị trí ban đầu của Pacman và Ghost ---------------
         
@@ -436,7 +530,9 @@ class Menu:
         Red_Ghost = Ghost(17, 12, "Object/images/Blinky.png")
 
         # --------------- Vẽ bảng ---------------
+                    
         screen.fill((0, 0, 0))
+        self.draw_food()
         self.draw_board()
 
         Pacman.draw(screen)
@@ -473,8 +569,35 @@ class Menu:
         Red_Ghost.draw(screen)
         pygame.display.update()
         running = True
+        food_remain = 244
+        player_score = 0
+        font = pygame.font.Font(None, 36)
+        blue_step = 1
+        pink_step = 1
+        orange_step = 1
+        red_step = 1
+        result = False
+        start_time = time.time()
+        play_time = start_time
         
         while running:
+            text = font.render("SCORE: " + str(player_score), True, WHITE)
+            text_rect = text.get_rect()
+            text_rect.topleft = (30, 50)
+            screen.blit(text, text_rect)
+            
+            # Tính thời gian chơi
+            elapsed_time = time.time() - start_time
+            minutes = int(elapsed_time // 60)
+            seconds = int(elapsed_time % 60)
+            
+            # Tạo chuỗi hiển thị
+            time_text = f"{minutes:02}:{seconds:02}"
+            text_surface = font.render("PLAY TIME:  " + str(time_text), True, GREEN)
+            text_rect = text_surface.get_rect()
+            text_rect.topleft = (300, 50)
+            screen.blit(text_surface, text_rect)
+            
             # Xử lý sự kiện
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -485,67 +608,95 @@ class Menu:
             # Di chuyển Pac-Man
             Pacman.move(screen)
             new_end = Pacman.get_position()
-            if(self.board.grid[new_end[0]][new_end[1]] == 2):
+            if(self.board.grid[new_end[0]][new_end[1]] == 2 or self.board.grid[new_end[0]][new_end[1]] == 6):
                 self.board.grid[new_end[0]][new_end[1]] = 1
+                food_remain -= 1
+                player_score += 1
             
             # Nếu Pac-Man thay đổi vị trí, cập nhật đường đi mới của Ghosts
             if new_end != end:
                 current_step = 1
                 end = new_end
+                
+                # Xử lí vị trí delay lâu của Pink Ghost
+                if(end == (8, 4) or end == (8, 3)):
+                    if(Pacman.direction == "LEFT"):
+                        end = (8, 2)
+                    if(Pacman.direction == "RIGHT"):
+                        end = (8, 5)
+                
+                Pink_result = algorithm.DFS(main_board, Pink_start, end, path=None)
+                end  = new_end
+                
                 # Tính toán đường đi mới cho Ghosts
                 Blue_result = algorithm.BFS(main_board, Blue_start, end)
-                Pink_result = algorithm.DFS(main_board, Pink_start, end, path=None)
                 Orange_result = algorithm.UCS(main_board, Orange_start, end)
                 Red_result = algorithm.ASTAR(main_board, Red_start, end)
-            
-            
-            # Tính độ dài lớn nhất của các đường đi
-            min_length = min(len(Blue_result), len(Pink_result), len(Orange_result), len(Red_result))
+                blue_step = 1
+                pink_step = 1
+                orange_step = 1
+                red_step = 1
 
             # Di chuyển từng Ghost nếu còn đường đi
-            if current_step < min_length:
-                if current_step < len(Blue_result):
-                    target_x = Blue_result[current_step][0]
-                    target_y = Blue_result[current_step][1]
-                    Blue_Ghost.move(target_x, target_y, screen)
-                    Blue_start = Blue_Ghost.get_position()
+            if blue_step < len(Blue_result):
+                if(Blue_Ghost.check_collision(
+                        Blue_result[blue_step],
+                        Pink_result, pink_step,
+                        Orange_result, orange_step,
+                        Red_result, red_step)):
+                    blue_step -= 1
+                target_x = Blue_result[blue_step][0]
+                target_y = Blue_result[blue_step][1]
+                Blue_Ghost.move(target_x, target_y, screen)
+                Blue_start = Blue_Ghost.get_position()
+                blue_step += 1
 
-                if current_step < len(Pink_result):
-                    if(Pink_result[current_step] == Blue_Ghost.get_position()):
-                        target_x = Pink_result[0][0]
-                        target_y = Pink_result[0][1]
-                    else:
-                        target_x = Pink_result[current_step][0]
-                        target_y = Pink_result[current_step][1]
-                    Pink_Ghost.move(target_x, target_y, screen)
-                    Pink_start = Pink_Ghost.get_position()
+            if pink_step < len(Pink_result):
+                if(Pink_Ghost.check_collision(
+                        Pink_result[current_step], 
+                        Blue_result, blue_step,
+                        Orange_result, orange_step,
+                        Red_result, red_step)):
+                    pink_step -= 1
+                    
+                target_x = Pink_result[pink_step][0]
+                target_y = Pink_result[pink_step][1]
+                Pink_Ghost.move(target_x, target_y, screen)
+                Pink_start = Pink_Ghost.get_position()
+                pink_step += 1
 
-                if current_step < len(Orange_result):
-                    if(Orange_result[current_step] == Blue_Ghost.get_position() or 
-                       Orange_result[current_step] == Pink_Ghost.get_position()):
-                        target_x = Orange_result[0][0]
-                        target_y = Orange_result[0][1]
-                    else:
-                        target_x = Orange_result[current_step][0]
-                        target_y = Orange_result[current_step][1]
-                    Orange_Ghost.move(target_x, target_y, screen)
-                    Orange_start = Orange_Ghost.get_position()
+            if orange_step < len(Orange_result):
+                if(Orange_Ghost.check_collision(
+                        Orange_result[orange_step], 
+                        Blue_result, blue_step,
+                        Pink_result, pink_step,
+                        Red_result, red_step)):
+                    orange_step -= 1
+            
+                target_x = Orange_result[orange_step][0]
+                target_y = Orange_result[orange_step][1]
+                Orange_Ghost.move(target_x, target_y, screen)
+                Orange_start = Orange_Ghost.get_position()
+                orange_step += 1
 
-                if current_step < len(Red_result):
-                    if(Red_result[current_step] == Blue_Ghost.get_position() or 
-                       Red_result[current_step] == Pink_Ghost.get_position() or
-                       Red_result[current_step] == Orange_Ghost.get_position()):
-                        target_x = Red_result[0][0]
-                        target_y = Red_result[0][1]
-                    else:
-                        target_x = Red_result[current_step][0]
-                        target_y = Red_result[current_step][1]
-                    Red_Ghost.move(target_x, target_y, screen)
-                    Red_start = Red_Ghost.get_position()
+            if red_step < len(Red_result):
+                if(Red_Ghost.check_collision(
+                        Red_result[red_step], 
+                        Blue_result, blue_step,
+                        Pink_result, pink_step,
+                        Orange_result, orange_step)):
+                    red_step -= 1
+                
+                target_x = Red_result[red_step][0]
+                target_y = Red_result[red_step][1]
+                Red_Ghost.move(target_x, target_y, screen)
+                Red_start = Red_Ghost.get_position()
+                red_step += 1
 
 
             # Vẽ lại màn hình
             screen.fill((0, 0, 0))
+            self.draw_food()
             self.draw_board()
             Pacman.draw(screen)
             Blue_Ghost.draw(screen)
@@ -553,15 +704,28 @@ class Menu:
             Orange_Ghost.draw(screen)
             Red_Ghost.draw(screen)
             pygame.display.update()
-            current_step += 1  # Tăng bước đi của Ghosts
-            if(current_step == min_length):
+            
+            if(blue_step == len(Blue_result) or pink_step == len(Pink_result) or orange_step == len(Orange_result) or red_step == len(Red_result) or food_remain == 0):
                 running = False
+                if(food_remain == 0):
+                    result = True
+                else:
+                    result = False
+                play_time = elapsed_time
 
             # Giới hạn tốc độ game (60 FPS)
             clock.tick(60)
             
         # Trả về bảng ban đầu
-        self.board.grid = original_board
+        self.board.grid = copy.deepcopy(board.grid)
+        if(result == True):
+            if(play_time < 60):
+                player_score += 100
+            elif(play_time < 120):
+                player_score += 50
+            self.draw_win_screen(player_score)
+        else:
+            self.draw_lose_screen()
         pygame.time.wait(30)
 
 
@@ -586,7 +750,6 @@ class Menu:
     def run(self):
         
         # Tạo danh sách vị trí xuất hiện của Pacman
-        self.create_PacMan_spawn_list()
         
         while not self.done:
             self.clicked = False
@@ -619,10 +782,80 @@ class Menu:
 
                     #Display image of tile
                     screen.blit(tileImage, (j * SQUARE, i * SQUARE, SQUARE, SQUARE))
-                elif self.board.grid[i][j] == 2 or self.board.grid[i][j] == 6: # Draw food
-                    pygame.draw.circle(screen, (255, 255, 0), (j * SQUARE + SQUARE // 2, i * SQUARE + SQUARE // 2), 5)
                 
                 currentTile += 1
+
+# ============ Hàm màn hình kết thúc ============    
+    def draw_end_screen_algorithmTest(self, time, memory, algorithm_name):
+        screen.fill(BLACK)  # Background color
+        game_over_text = font.render(f"STATS", True, RED)
+        algorithm_name_text = font.render(f"Algorithm: {algorithm_name}", True, WHITE)
+        time_text = font.render(f"Execution time: {time:.10f} seconds", True, WHITE)
+        memory_text = font.render(f"Memory usage: {memory} bytes", True, WHITE)
+        continue_text = font.render("Press Enter to Continue", True, WHITE)
+
+        # Position text in the center
+        screen.blit(ending_background, (0, 0))
+        screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - 150))
+        screen.blit(algorithm_name_text, (WIDTH // 2 - algorithm_name_text.get_width() // 2, HEIGHT // 2 - 50))
+        screen.blit(time_text, (WIDTH // 2 - time_text.get_width() // 2, HEIGHT // 2))
+        screen.blit(memory_text, (WIDTH // 2 - memory_text.get_width() // 2, HEIGHT // 2 + 50))
+        screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT - 100))
+
+        pygame.display.flip()  # Update the screen
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit(0)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return
+                    
+    def draw_win_screen(self, score):
+        screen.fill(BLACK)  # Background color
+        game_over_text = font.render(f"YOU WIN", True, RED)
+        Score_text = font.render(f"Score: {score}", True, WHITE)
+        continue_text = font.render("Press Enter to Continue", True, WHITE)
+
+        # Position text in the center
+        screen.blit(win_background, (0, 0))
+        screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - 150))
+        screen.blit(Score_text, (WIDTH // 2 - Score_text.get_width() // 2, HEIGHT // 2))
+        screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT - 100))
+
+        pygame.display.flip()  # Update the screen
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit(0)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return
+                    
+    def draw_lose_screen(self):
+        screen.fill(BLACK)
+        continue_text = font.render("Press Enter to Continue", True, WHITE)
+
+        # Position text in the center
+        screen.blit(lose_background, (0, 0))
+        screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT - 100))
+
+        pygame.display.flip()  # Update the screen
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit(0)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return
+                
+    
 
     
 
