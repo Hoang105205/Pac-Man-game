@@ -1,10 +1,9 @@
 import pygame
-from constants import SPRITERATIO, SQUARE, SPRITEOFFSET, SPEED
+from constants import SPRITERATIO, SQUARE, SPRITEOFFSET, SPEED, BOARD_HEIGHT, BOARD_WIDTH
 from Object.Board import Board
 import random
 class Player:
     def __init__(self):
-        
         # Random vị trí ban đầu
         self.board = Board()
         while True:
@@ -16,7 +15,7 @@ class Player:
                 break
             else:
                 continue
-            
+        
         # Xác định hướng đi ban đầu
         self.rotation_angle = 0
         if self.board.grid[self.row_index][self.col_index - 1] != 3:
@@ -57,10 +56,10 @@ class Player:
         screen.blit(self.image, (self.x, self.y))
 
     def move(self, screen):
-        if self.direction == "LEFT" and self.row_index == 17 and self.col_index == 0:
+        if self.direction == "LEFT" and self.row_index == BOARD_HEIGHT // 2 and self.col_index == 0:
             self.x = 27 * SQUARE + SPRITEOFFSET
             self.col_index = 27
-        elif self.direction == "RIGHT" and self.row_index == 17 and self.col_index == 27:
+        elif self.direction == "RIGHT" and self.row_index == BOARD_HEIGHT // 2 and self.col_index == BOARD_WIDTH - 1:
             self.x = 0 * SQUARE + SPRITEOFFSET
             self.col_index = 0
         else:
@@ -94,9 +93,6 @@ class Player:
                 self.draw(screen)
                 pygame.display.update()
 
-
-    def collide(self, rect):
-        return self.rect.colliderect(rect)
     
     def get_position(self):
         return (self.row_index, self.col_index)

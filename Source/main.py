@@ -18,10 +18,4 @@ def main():
     menu.run()
     pygame.quit()
 
-
-
-   
-
-
-
 main()

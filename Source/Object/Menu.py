@@ -109,7 +109,6 @@ class Menu:
         self.done = False
         self.current_screen = 1
         self.screen = screen
-        self.PacMan_spawn_list = []
 
         self.menu_button_size = (150, 100)
 
@@ -173,6 +172,7 @@ class Menu:
                 if(self.board.grid[i][j] == 2 or self.board.grid[i][j] == 6):
                     pygame.draw.circle(screen, (255, 255, 0), (j * SQUARE + SQUARE // 2, i * SQUARE + SQUARE // 2), 5)
     
+    
     def level_1_ingame(self):
         # main_board = copy.deepcopy(self.board.grid) # Sao chép bảng để tránh thay đổi bảng gốc
 
@@ -205,7 +205,7 @@ class Menu:
         #Calculate memory cost
         tracemalloc.start()
 
-        result = algorithm.BFS(main_board, start, end)
+        [result, expaneded_nodes] = algorithm.BFS(main_board, start, end)
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -228,7 +228,7 @@ class Menu:
 
         pygame.time.wait(1000)
         
-        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "BFS")
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage,expaneded_nodes, "BFS")
     
     
     def level_2_ingame(self):
@@ -262,7 +262,7 @@ class Menu:
         #Calculate memory cost
         tracemalloc.start()
 
-        result = algorithm.DFS(main_board, start, end)
+        [result, expanded_nodes] = algorithm.DFS(main_board, start, end)
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -285,7 +285,7 @@ class Menu:
 
         pygame.time.wait(1000)
 
-        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "DFS")
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, expanded_nodes, "DFS")
     
     
     def level_3_ingame(self):
@@ -319,7 +319,7 @@ class Menu:
         #Calculate memory cost
         tracemalloc.start()
 
-        result = algorithm.UCS(main_board, start, end)
+        [result, expanded_nodes] = algorithm.UCS(main_board, start, end)
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -341,7 +341,7 @@ class Menu:
 
         pygame.time.wait(1000)
 
-        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "UCS")
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage,expanded_nodes, "UCS")
     
     
     def level_4_ingame(self):
@@ -375,7 +375,7 @@ class Menu:
         #Calculate memory cost
         tracemalloc.start()
 
-        result = algorithm.ASTAR(main_board, start, end)
+        [result, expanded_nodes] = algorithm.ASTAR(main_board, start, end)
 
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
@@ -398,7 +398,7 @@ class Menu:
 
         pygame.time.wait(1000)
 
-        self.draw_end_screen_algorithmTest(execution_time, memory_usage, "A*")
+        self.draw_end_screen_algorithmTest(execution_time, memory_usage, expanded_nodes, "A*")
         
     
     def level_5_ingame(self):
@@ -436,10 +436,10 @@ class Menu:
         end = Pacman.get_position()
 
         algorithm = Algorithm()
-        Blue_result = algorithm.BFS(main_board, Blue_start, end)
-        Pink_result = algorithm.DFS(main_board, Pink_start, end, path = None)
-        Orange_result = algorithm.UCS(main_board, Orange_start, end)
-        Red_result = algorithm.ASTAR(main_board, Red_start, end)
+        [Blue_result, blue_expanded_nodes] = algorithm.BFS(main_board, Blue_start, end)
+        [Pink_result, pink_expanded_nodes] = algorithm.DFS(main_board, Pink_start, end, path = None)
+        [Orange_result, orange_expanded_nodes] = algorithm.UCS(main_board, Orange_start, end)
+        [Red_result, red_expanded_nodes] = algorithm.ASTAR(main_board, Red_start, end)
 
         if Blue_result is not None or Pink_result is not None or Orange_result is not None or Red_result is not None:
             blue_step = 1
@@ -552,10 +552,10 @@ class Menu:
         end = Pacman.get_position()
         board = Board()
         algorithm = Algorithm()
-        Blue_result = algorithm.BFS(main_board, Blue_start, end)
-        Pink_result = algorithm.DFS(main_board, Pink_start, end, path = None)
-        Orange_result = algorithm.UCS(main_board, Orange_start, end)
-        Red_result = algorithm.ASTAR(main_board, Red_start, end)
+        [Blue_result, blue_expanded_nodes] = algorithm.BFS(main_board, Blue_start, end)
+        [Pink_result, pink_expanded_nodes] = algorithm.DFS(main_board, Pink_start, end, path = None)
+        [Orange_result, orange_expanded_nodes] = algorithm.UCS(main_board, Orange_start, end)
+        [Red_result, red_expanded_nodes] = algorithm.ASTAR(main_board, Red_start, end)
         new_end = end
         clock = pygame.time.Clock()
         
@@ -625,13 +625,13 @@ class Menu:
                     if(Pacman.direction == "RIGHT"):
                         end = (8, 5)
                 
-                Pink_result = algorithm.DFS(main_board, Pink_start, end, path=None)
+                [Pink_result, pink_expanded_nodes] = algorithm.DFS(main_board, Pink_start, end, path = None)
                 end  = new_end
                 
                 # Tính toán đường đi mới cho Ghosts
-                Blue_result = algorithm.BFS(main_board, Blue_start, end)
-                Orange_result = algorithm.UCS(main_board, Orange_start, end)
-                Red_result = algorithm.ASTAR(main_board, Red_start, end)
+                [Blue_result, blue_expanded_nodes] = algorithm.BFS(main_board, Blue_start, end)
+                [Orange_result, orange_expanded_nodes] = algorithm.UCS(main_board, Orange_start, end)
+                [Red_result, red_expanded_nodes] = algorithm.ASTAR(main_board, Red_start, end)
                 blue_step = 1
                 pink_step = 1
                 orange_step = 1
@@ -749,8 +749,6 @@ class Menu:
     # ============ Hàm chạy chính ============
     def run(self):
         
-        # Tạo danh sách vị trí xuất hiện của Pacman
-        
         while not self.done:
             self.clicked = False
             for event in pygame.event.get():
@@ -786,12 +784,13 @@ class Menu:
                 currentTile += 1
 
 # ============ Hàm màn hình kết thúc ============    
-    def draw_end_screen_algorithmTest(self, time, memory, algorithm_name):
+    def draw_end_screen_algorithmTest(self, time, memory, expanded_nodes, algorithm_name):
         screen.fill(BLACK)  # Background color
         game_over_text = font.render(f"STATS", True, RED)
         algorithm_name_text = font.render(f"Algorithm: {algorithm_name}", True, WHITE)
         time_text = font.render(f"Execution time: {time:.10f} seconds", True, WHITE)
         memory_text = font.render(f"Memory usage: {memory} bytes", True, WHITE)
+        expanded_node_text = font.render(f"Expanded nodes: {expanded_nodes}", True, WHITE)
         continue_text = font.render("Press Enter to Continue", True, WHITE)
 
         # Position text in the center
@@ -800,6 +799,7 @@ class Menu:
         screen.blit(algorithm_name_text, (WIDTH // 2 - algorithm_name_text.get_width() // 2, HEIGHT // 2 - 50))
         screen.blit(time_text, (WIDTH // 2 - time_text.get_width() // 2, HEIGHT // 2))
         screen.blit(memory_text, (WIDTH // 2 - memory_text.get_width() // 2, HEIGHT // 2 + 50))
+        screen.blit(expanded_node_text, (WIDTH // 2 - expanded_node_text.get_width() // 2, HEIGHT // 2 + 100))
         screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT - 100))
 
         pygame.display.flip()  # Update the screen
