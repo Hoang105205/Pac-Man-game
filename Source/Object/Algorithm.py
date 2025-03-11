@@ -32,15 +32,22 @@ class Algorithm:
             for dx, dy in directions:
                 nx = x + dx
                 ny = y + dy
+                
+                if(nx == 17 and ny == 28):
+                    ny = 0
+                
+                if(nx == 17 and ny == -1):
+                    ny = 27
+
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in visited:
-                    if(nx, ny) == end:
-                        return path + [(x, y), (nx, ny)]
+                    if((nx, ny) == end):
+                        return [path + [(x, y), (nx, ny)], len(visited)]
                     queue.append((nx, ny, path + [(x, y)]))
 
         return None
     
     
-    def DFS(self, grid, start, end, path=None):
+    def DFS(self, grid, start, end, path=None, expanded_nodes = 0):
         if path is None:
             path = [start]  # Danh sách lưu đường đi hiện tại
 
@@ -51,22 +58,30 @@ class Algorithm:
         rows, cols = len(grid), len(grid[0])
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Lên, Xuống, Trái, Phải
         
-        for dx, dy in directions:
+        
+        for index, (dx, dy) in enumerate(directions):
             nx, ny = x + dx, y + dy
+            if nx == 17 and ny == 28:
+                ny = 0
+            elif nx == 17 and ny == -1:
+                ny = 27
             if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in path:
                 if((nx, ny) == end):
-                    return path + [(nx, ny)]
+                    return [path + [(nx, ny)], expanded_nodes + index + 1]
 
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-
+            if nx == 17 and ny == 28:
+                ny = 0
+            elif nx == 17 and ny == -1:
+                ny = 27
             # Kiểm tra nếu ô hợp lệ và chưa xuất hiện trong đường đi hiện tại
             if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0 and (nx, ny) not in path:
-                new_path = self.DFS(grid, (nx, ny), end, path + [(nx, ny)])
+                [new_path, expanded_nodes]  = self.DFS(grid, (nx, ny), end, path + [(nx, ny)], expanded_nodes + 1)
                 if new_path:  # Nếu tìm thấy đường đi, trả về ngay
-                    return new_path
+                    return [new_path, expanded_nodes]
 
-        return None  # Nếu không tìm được đường đi nào
+        return [None, expanded_nodes]  # Nếu không tìm được đường đi nào
     
     def UCS(self, grid, start, end):
         priority_queue = [(0, start, [])]  # (cost, (x, y), path)
@@ -81,7 +96,7 @@ class Algorithm:
 
             # Nếu đã đến đích, trả về đường đi
             if (x, y) == end:
-                return path + [(x, y)]
+                return [path + [(x, y)], len(visited)]
 
             # Nếu đã thăm ô này, bỏ qua
             if (x, y) in visited:
@@ -91,7 +106,10 @@ class Algorithm:
 
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
-
+                if nx == 17 and ny == 28:
+                    ny = 0
+                elif nx == 17 and ny == -1:
+                    ny = 27
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
                     heapq.heappush(priority_queue, (cost + 1, (nx, ny), path + [(x, y)]))
@@ -113,7 +131,7 @@ class Algorithm:
 
             # Nếu đã đến đích, trả về đường đi
             if (x, y) == end:
-                return path + [(x, y)]
+                return [path + [(x, y)], len(visited)]
 
             # Nếu đã thăm ô này, bỏ qua
             if (x, y) in visited:
@@ -126,6 +144,10 @@ class Algorithm:
 
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
+                if nx == 17 and ny == 28:
+                    ny = 0
+                elif nx == 17 and ny == -1:
+                    ny = 27
 
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
