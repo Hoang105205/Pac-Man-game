@@ -65,6 +65,13 @@ class Ghost:
     def get_position(self):
         return (self.row_index, self.col_index)
     
+    def set_position(self, x, y):
+        self.row_index = x
+        self.col_index = y
+        self.x = y * SQUARE + SPRITEOFFSET
+        self.y = x * SQUARE + SPRITEOFFSET
+        self.rect.topleft = (self.x, self.y)
+    
     def check_collision(self, des, Ghost1_path, Ghost1_step, Ghost2_path, Ghost2_step, Ghost3_path, Ghost3_step): 
         if(des == Ghost1_path[Ghost1_step - 1] or des == Ghost2_path[Ghost2_step - 1] or des == Ghost3_path[Ghost3_step - 1]):
             current_position = self.get_position()
@@ -77,7 +84,7 @@ class Ghost:
             
             # Khi 2 con ma di chuyển vào ô nhau
             if(current_position == Ghost1_path[Ghost1_step] or current_position == Ghost2_path[Ghost2_step] or current_position == Ghost3_path[Ghost3_step]):
-                return False
+                return True
             
             # Khi 2 con ma di chuyển vào ô Pacman
             if(des == Ghost1_path[Ghost1_step] and Ghost1_step == len(Ghost1_path) - 1):

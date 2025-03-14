@@ -20,7 +20,7 @@ class Algorithm:
 
             # kiểm tra xem (x, y) có phải là điểm kết thúc không
             if (x, y) == end:
-                return path + [(x, y)]
+                return [path + [(x, y)], len(visited)]
             
             # nếu (x, y) đã được thăm rồi thì bỏ qua
             if (x, y) in visited:
@@ -83,6 +83,22 @@ class Algorithm:
 
         return [None, expanded_nodes]  # Nếu không tìm được đường đi nào
     
+    def get_ghost_cost(self, x, y, path):
+        # Trọng số cơ bản cho mỗi ô là 1
+        cost = 1
+        
+        # Ưu tiên đường tắt qua hầm (nếu có)
+        if (x, y) == (17, 0) or (x, y) == (17, 27):
+            cost = 0.5
+            
+        #Khúc cua sẽ tốn nhiều chi phí hơn
+        if(len(path) != 0):
+            previous = path[-1]
+            if (x != previous[0] and y == previous[1]) or (x == previous[0] and y != previous[1]):
+                cost = 2
+        return cost 
+
+    
     def UCS(self, grid, start, end):
         priority_queue = [(0, start, [])]  # (cost, (x, y), path)
         visited = set()
@@ -92,7 +108,7 @@ class Algorithm:
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
         while priority_queue:
-            cost, (x, y), path = heapq.heappop(priority_queue)
+            path_cost, (x, y), path = heapq.heappop(priority_queue)
 
             # Nếu đã đến đích, trả về đường đi
             if (x, y) == end:
@@ -112,7 +128,8 @@ class Algorithm:
                     ny = 27
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
-                    heapq.heappush(priority_queue, (cost + 1, (nx, ny), path + [(x, y)]))
+                    cost = self.get_ghost_cost(nx, ny, path)
+                    heapq.heappush(priority_queue, (path_cost + cost, (nx, ny), path + [(x, y)]))
 
         return None  # Không tìm thấy đường đi
     
