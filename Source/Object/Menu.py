@@ -524,6 +524,7 @@ class Menu:
         
         
         Pacman = Player()
+        Pacman.set_position(26, 14)
         Blue_Ghost = Ghost(16, 15, "Object/images/Inky.png")
         Pink_Ghost = Ghost(16, 12, "Object/images/Pinky.png")
         Orange_Ghost = Ghost(17, 15, "Object/images/Clyde.png")
@@ -788,7 +789,7 @@ class Menu:
         screen.fill(BLACK)  # Background color
         game_over_text = font.render(f"STATS", True, RED)
         algorithm_name_text = font.render(f"Algorithm: {algorithm_name}", True, WHITE)
-        time_text = font.render(f"Execution time: {time:.10f} seconds", True, WHITE)
+        time_text = font.render(f"Search time: {time:.10f} seconds", True, WHITE)
         memory_text = font.render(f"Memory usage: {memory} bytes", True, WHITE)
         expanded_node_text = font.render(f"Expanded nodes: {expanded_nodes}", True, WHITE)
         continue_text = font.render("Press Enter to Continue", True, WHITE)
@@ -858,4 +859,3 @@ class Menu:
     
 
     
-
