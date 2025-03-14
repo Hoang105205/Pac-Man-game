@@ -7,11 +7,11 @@ class Player:
         # Random vị trí ban đầu
         self.board = Board()
         while True:
-            self.row_index = 31 #random.randint(0, len(self.board.grid) - 1) 
-            self.col_index = 26 #random.randint(0, len(self.board.grid[0]) - 1)
+            self.row_index = random.randint(0, len(self.board.grid) - 1)
+            self.col_index = random.randint(0, len(self.board.grid[0]) - 1)
             if self.board.grid[self.row_index][self.col_index] != 3 and self.board.grid[self.row_index][self.col_index] != 4:
                 self.x = self.col_index * SQUARE + SPRITEOFFSET
-                self.y = self.row_index * SQUARE + SPRITEOFFSET
+                self.y = self.row_index *  SQUARE + SPRITEOFFSET
                 break
             else:
                 continue
@@ -96,6 +96,28 @@ class Player:
     
     def get_position(self):
         return (self.row_index, self.col_index)
+    
+    def set_position(self, row, col):
+        self.row_index = row
+        self.col_index = col
+        self.x = self.col_index * SQUARE + SPRITEOFFSET
+        self.y = self.row_index *  SQUARE + SPRITEOFFSET
+        self.rect.topleft = (self.x, self.y)
+        # Xác định hướng đi ban đầu
+        self.rotation_angle = 0
+        if self.board.grid[self.row_index][self.col_index - 1] != 3:
+            self.direction = "LEFT"
+            self.rotation_angle = 180
+        elif self.board.grid[self.row_index][self.col_index + 1] != 3:
+            self.direction = "RIGHT"
+            self.rotation_angle = 0
+        elif self.board.grid[self.row_index - 1][self.col_index] != 3:
+            self.direction = "UP"
+            self.rotation_angle = 90
+        elif self.board.grid[self.row_index + 1][self.col_index] != 3:
+            self.direction = "DOWN"
+            self.rotation_angle = -90
+        
     
     def remove_player(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect)
