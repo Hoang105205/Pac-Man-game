@@ -13,3 +13,6 @@ SPRITEOFFSET = SQUARE * (1 - SPRITERATIO) * (1/2)
 
 #Speed
 SPEED = 1
+
+# Special Positon
+MID_ROW = 17

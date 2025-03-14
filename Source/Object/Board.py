@@ -3,7 +3,7 @@ class Board:
         self.width = 32
         self.height = 32
 
-        # 28 Across 31 Tall 1: Empty Space 2: Food 3: Wall 4: Ghost safe-space
+        # 28 Across 31 Tall 1: Empty Space 2: Tic-Tak 3: Wall 4: Ghost safe-space 5: Special Tic-Tak
         self.grid = [
             [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],
             [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3],

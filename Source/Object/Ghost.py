@@ -1,5 +1,5 @@
 import pygame
-from constants import SPRITERATIO, SQUARE, SPEED, SPRITEOFFSET
+from constants import SPRITERATIO, SQUARE, SPEED, SPRITEOFFSET, BOARD_HEIGHT, BOARD_WIDTH
 
 class Ghost:
     def __init__(self, x, y, FileImage):
@@ -16,7 +16,7 @@ class Ghost:
         screen.blit(self.image, (self.x, self.y))
 
     def move(self, target_x, target_y, screen):
-        if(self.row_index == 17 and self.col_index == 0 and target_y == 27):
+        if(self.row_index == BOARD_HEIGHT // 2 and self.col_index == 0 and target_y == BOARD_WIDTH - 1):
             self.col_index = 27
             target_x = 27 * SQUARE + SPRITEOFFSET
             self.x = target_x
@@ -24,7 +24,7 @@ class Ghost:
             self.rect.topleft = (self.x, self.y)
             self.draw(screen)
             pygame.display.update()
-        elif(self.row_index == 17 and self.col_index == 27 and target_y == 0):
+        elif(self.row_index == BOARD_HEIGHT // 2 and self.col_index == BOARD_WIDTH - 1 and target_y == 0):
             self.col_index = 0
             target_x = 0 * SQUARE + SPRITEOFFSET
             self.x = target_x
@@ -61,9 +61,31 @@ class Ghost:
 
     def remove_ghost(self, screen):
         pygame.draw.rect(screen, (0, 0, 0), self.rect)
-
-    def collide(self, rect):
-        return self.rect.colliderect(rect)
     
     def get_position(self):
         return (self.row_index, self.col_index)
+    
+    def check_collision(self, des, Ghost1_path, Ghost1_step, Ghost2_path, Ghost2_step, Ghost3_path, Ghost3_step): 
+        if(des == Ghost1_path[Ghost1_step - 1] or des == Ghost2_path[Ghost2_step - 1] or des == Ghost3_path[Ghost3_step - 1]):
+            current_position = self.get_position()
+            if(Ghost1_step == len(Ghost1_path)):
+                Ghost1_step -= 1
+            if(Ghost2_step == len(Ghost2_path)):
+                Ghost2_step -= 1
+            if(Ghost3_step == len(Ghost3_path)):
+                Ghost3_step -= 1
+            
+            # Khi 2 con ma di chuyển vào ô nhau
+            if(current_position == Ghost1_path[Ghost1_step] or current_position == Ghost2_path[Ghost2_step] or current_position == Ghost3_path[Ghost3_step]):
+                return False
+            
+            # Khi 2 con ma di chuyển vào ô Pacman
+            if(des == Ghost1_path[Ghost1_step] and Ghost1_step == len(Ghost1_path) - 1):
+                return False
+            if(des == Ghost2_path[Ghost2_step] and Ghost2_step == len(Ghost2_path) - 1):
+                return False
+            if(des == Ghost3_path[Ghost3_step] and Ghost3_step == len(Ghost3_path) - 1):
+                return False
+            
+            return True
+        return False
