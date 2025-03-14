@@ -446,7 +446,7 @@ class Menu:
             pink_step = 1
             orange_step = 1
             red_step = 1
-            while blue_step < len(Blue_result) or pink_step < len(Pink_result) or orange_step < len(Orange_result) or red_step < len(Red_result):
+            while blue_step < len(Blue_result) and pink_step < len(Pink_result) and orange_step < len(Orange_result) and red_step < len(Red_result):
                 # Di chuyển từng Ghost nếu còn đường đi
                 if blue_step < len(Blue_result):
                     if(Blue_Ghost.check_collision(
