@@ -95,7 +95,7 @@ class Algorithm:
         if(len(path) > 1):
             previous = path[-2]
             if (x != previous[0] and abs(y - previous[1] == 1)) or (abs(x - previous[0] == 1) and y != previous[1]):
-                cost = 2
+                cost = 3
         return cost 
 
     
