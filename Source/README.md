@@ -30,7 +30,7 @@ pip install -r requirements.txt
 python main.py
 ```
 -   **.exe**
-```sh
+```
 Click file Pacman game.exe
 ```
 
@@ -44,6 +44,7 @@ Click file Pacman game.exe
     ├── constants.py     # Define game constants  
     ├── requirements.txt # Dependencies  
     ├── README.md        # Project documentation  
+    ├── Pacman game.exe  # Project Application 
 
 ```
 
