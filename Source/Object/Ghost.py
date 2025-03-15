@@ -85,7 +85,6 @@ class Ghost:
             # Khi 2 con ma di chuyển vào ô nhau
             if(current_position == Ghost1_path[Ghost1_step] or current_position == Ghost2_path[Ghost2_step] or current_position == Ghost3_path[Ghost3_step]):
                 return True
-            
             # Khi 2 con ma di chuyển vào ô Pacman
             if(des == Ghost1_path[Ghost1_step] and Ghost1_step == len(Ghost1_path) - 1):
                 return False

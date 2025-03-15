@@ -25,9 +25,13 @@ pip install -r requirements.txt
 ```
 
 ### ▶️ Running the Game
-To start the game, run:
+-   **Terminal**
 ```sh
 python main.py
+```
+-   **.exe**
+```sh
+Click file Pacman game.exe
 ```
 
 ## 📂 File Structure

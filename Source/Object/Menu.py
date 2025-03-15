@@ -490,7 +490,17 @@ class Menu:
                             Pink_result, pink_step,
                             Orange_result, orange_step, 
                             Red_result, red_step)):
-                        blue_step -= 1
+                        if(self.Ghost["Blue"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Blue_result[blue_step]):
+                            blue_step = pink_step
+                            Blue_result = Pink_result
+                        elif(self.Ghost["Blue"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Blue_result[blue_step]):
+                            blue_step = orange_step
+                            Blue_result = Orange_result
+                        elif(self.Ghost["Blue"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Blue_result[blue_step]):
+                            blue_step = red_step
+                            Blue_result = Red_result
+                        else:
+                            blue_step -= 1
                         
                     target_x = Blue_result[blue_step][0]
                     target_y = Blue_result[blue_step][1]    
@@ -503,7 +513,17 @@ class Menu:
                             Blue_result, blue_step,
                             Orange_result, orange_step,
                             Red_result, red_step)):
-                        pink_step -= 1
+                        if(self.Ghost["Pink"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Pink_result[pink_step]):    
+                            pink_step = blue_step
+                            Pink_result = Blue_result
+                        elif(self.Ghost["Pink"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Pink_result[pink_step]):
+                            pink_step = orange_step
+                            Pink_result = Orange_result
+                        elif(self.Ghost["Pink"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Pink_result[pink_step]):
+                            pink_step = red_step
+                            Pink_result = Red_result
+                        else:
+                            pink_step -= 1
                     
                     target_x = Pink_result[pink_step][0]
                     target_y = Pink_result[pink_step][1]
@@ -516,7 +536,17 @@ class Menu:
                             Blue_result, blue_step,
                             Pink_result, pink_step,
                             Red_result, red_step)):
-                        orange_step -= 1
+                        if(self.Ghost["Orange"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Orange_result[orange_step]):
+                            orange_step = blue_step
+                            Orange_result = Blue_result
+                        elif(self.Ghost["Orange"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Orange_result[orange_step]):
+                            orange_step = pink_step
+                            Orange_result = Pink_result
+                        elif(self.Ghost["Orange"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Orange_result[orange_step]):
+                            orange_step = red_step
+                            Orange_result = Red_result
+                        else:
+                            orange_step -= 1
             
                     target_x = Orange_result[orange_step][0]
                     target_y = Orange_result[orange_step][1]
@@ -529,7 +559,17 @@ class Menu:
                             Blue_result, blue_step,
                             Pink_result, pink_step,
                             Orange_result, orange_step)):
-                        red_step -= 1
+                        if(self.Ghost["Red"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Red_result[red_step]):
+                            red_step = blue_step
+                            Red_result = Blue_result
+                        elif(self.Ghost["Red"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Red_result[red_step]):
+                            red_step = pink_step
+                            Red_result = Pink_result
+                        elif(self.Ghost["Red"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Red_result[red_step]):
+                            red_step = orange_step
+                            Red_result = Orange_result
+                        else:
+                            red_step -= 1
                     
                     target_x = Red_result[red_step][0]
                     target_y = Red_result[red_step][1]
@@ -679,7 +719,17 @@ class Menu:
                         Pink_result, pink_step,
                         Orange_result, orange_step,
                         Red_result, red_step)):
-                    blue_step -= 1
+                    if(self.Ghost["Blue"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Blue_result[blue_step]):
+                        blue_step = pink_step
+                        Blue_result = Pink_result
+                    elif(self.Ghost["Blue"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Blue_result[blue_step]):
+                        blue_step = orange_step
+                        Blue_result = Orange_result
+                    elif(self.Ghost["Blue"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Blue_result[blue_step]):
+                        blue_step = red_step
+                        Blue_result = Red_result
+                    else:
+                        blue_step -= 1
                 target_x = Blue_result[blue_step][0]
                 target_y = Blue_result[blue_step][1]
                 self.Ghost["Blue"].move(target_x, target_y, screen)
@@ -692,7 +742,17 @@ class Menu:
                         Blue_result, blue_step,
                         Orange_result, orange_step,
                         Red_result, red_step)):
-                    pink_step -= 1
+                    if(self.Ghost["Pink"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Pink_result[pink_step]):
+                        pink_step = blue_step
+                        Pink_result = Blue_result
+                    elif(self.Ghost["Pink"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Pink_result[pink_step]):
+                        pink_step = orange_step
+                        Pink_result = Orange_result
+                    elif(self.Ghost["Pink"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Pink_result[pink_step]):
+                        pink_step = red_step
+                        Pink_result = Red_result
+                    else:
+                        pink_step -= 1
                     
                 target_x = Pink_result[pink_step][0]
                 target_y = Pink_result[pink_step][1]
@@ -706,7 +766,17 @@ class Menu:
                         Blue_result, blue_step,
                         Pink_result, pink_step,
                         Red_result, red_step)):
-                    orange_step -= 1
+                    if(self.Ghost["Orange"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Orange_result[orange_step]):
+                        orange_step = blue_step
+                        Orange_result = Blue_result
+                    elif(self.Ghost["Orange"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Orange_result[orange_step]):
+                        orange_step = pink_step
+                        Orange_result = Pink_result
+                    elif(self.Ghost["Orange"].get_position() == Red_result[red_step] and self.Ghost["Red"].get_position() == Orange_result[orange_step]):
+                        orange_step = red_step
+                        Orange_result = Red_result
+                    else:
+                        orange_step -= 1
             
                 target_x = Orange_result[orange_step][0]
                 target_y = Orange_result[orange_step][1]
@@ -720,7 +790,17 @@ class Menu:
                         Blue_result, blue_step,
                         Pink_result, pink_step,
                         Orange_result, orange_step)):
-                    red_step -= 1
+                    if(self.Ghost["Red"].get_position() == Blue_result[blue_step] and self.Ghost["Blue"].get_position() == Red_result[red_step]):
+                        red_step = blue_step
+                        Red_result = Blue_result
+                    elif(self.Ghost["Red"].get_position() == Pink_result[pink_step] and self.Ghost["Pink"].get_position() == Red_result[red_step]):
+                        red_step = pink_step
+                        Red_result = Pink_result
+                    elif(self.Ghost["Red"].get_position() == Orange_result[orange_step] and self.Ghost["Orange"].get_position() == Red_result[red_step]):
+                        red_step = orange_step
+                        Red_result = Orange_result
+                    else:
+                        red_step -= 1
                 
                 target_x = Red_result[red_step][0]
                 target_y = Red_result[red_step][1]
