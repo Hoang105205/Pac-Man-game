@@ -6,7 +6,7 @@ This project is an AI-driven Pac-Man game where multiple ghosts use different pa
 -  **BFS (Breadth-First Search)**  
 -  **DFS (Depth-First Search)**  
 -  **UCS (Uniform Cost Search)**  
--  **A\* (A-Star Search)**  s
+-  **A\* (A-Star Search)**  
 
 Each ghost follows a unique algorithm to navigate the maze and attempt to catch Pac-Man.  
 
@@ -43,8 +43,8 @@ Click file Pacman game.exe
     ├── Object/          # Directory for game objects (ghost, pacman, etc.)  
     ├── constants.py     # Define game constants  
     ├── requirements.txt # Dependencies  
-    ├── README.md        # Project documentation  
-    ├── Pacman game.exe  # Project Application 
+    ├── README.md        # Project documentation 
+    ├── Pacman game.exe  # Game application
 
 ```
 

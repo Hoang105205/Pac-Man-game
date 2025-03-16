@@ -169,6 +169,7 @@ class Algorithm:
                 # Kiểm tra ô hợp lệ
                 if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != 0:
                     h = self.heuristic((nx, ny), end)
-                    heapq.heappush(priority_queue, (g + 1 + h, g + 1, (nx, ny), path + [(x, y)]))
+                    cost = self.get_ghost_cost(nx, ny, path)
+                    heapq.heappush(priority_queue, (g + cost + h, g + cost, (nx, ny), path + [(x, y)]))
 
         return None  # Không tìm thấy đường đi
