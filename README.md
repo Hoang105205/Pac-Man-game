@@ -42,9 +42,9 @@ Click file Pacman game.exe
     ├── Assets/          # Store game textures
     ├── Object/          # Directory for game objects (ghost, pacman, etc.)  
     ├── constants.py     # Define game constants  
-    ├── requirements.txt # Dependencies  
-    ├── README.md        # Project documentation 
     ├── Pacman game.exe  # Game application
+├── requirements.txt # Dependencies  
+├── README.md        # Project documentation 
 
 ```
 
